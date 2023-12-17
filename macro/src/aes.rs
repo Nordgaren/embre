@@ -1,12 +1,12 @@
 use crate::literal_bytes::LitBytes;
-use embedded_resources_build::util::xor_bytes;
+use embre_build::util::xor_bytes;
 use proc_macro::TokenStream;
 use quote::{quote, ToTokens};
 use std::fs;
 use syn::parse::{Parse, ParseStream};
 use syn::token::Comma;
 use syn::{parse_macro_input, LitStr};
-use embedded_resources_crypt::aes::aes_encrypt_bytes;
+use embre_crypt::aes::aes_encrypt_bytes;
 
 pub(crate) struct StringArgs {
     string: String,
@@ -62,7 +62,7 @@ pub(crate) fn include_aes_string_impl(input: TokenStream) -> TokenStream {
     } else {
         Some(&args.iv[..])
     };
-    args.key.into_iter();
+
     let str = aes_encrypt_bytes(args.string.as_bytes(), args.key.as_slice(), iv).expect("Could not AES encrypt bytes");
     let key = args.key;
     let len = str.len();
@@ -108,7 +108,7 @@ impl Parse for DataArgs {
                 Ok(DataArgs {  data, key, iv: vec![] })
             }
             Err(_) => Ok(DataArgs {
-                key: embedded_resources_build::util::generate_random_bytes(data.len()),
+                key: embre_build::util::generate_random_bytes(data.len()),
                 data,
                 iv: vec![],
             }),

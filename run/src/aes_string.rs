@@ -1,5 +1,5 @@
 use std::marker::PhantomData;
-use embedded_resources_crypt::aes::{AESCrypter, DefaultAesCrypter};
+use embre_crypt::aes::{AESCrypter, DefaultAesCrypter};
 use crate::StringResource;
 
 pub struct AESResource<'a, T, C: AESCrypter = DefaultAesCrypter> {

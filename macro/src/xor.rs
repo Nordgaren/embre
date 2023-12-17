@@ -1,5 +1,5 @@
 use crate::literal_bytes::LitBytes;
-use embedded_resources_build::util::xor_bytes;
+use embre_build::util::xor_bytes;
 use proc_macro::TokenStream;
 use quote::{quote, ToTokens};
 use std::fs;
@@ -31,7 +31,7 @@ impl Parse for StringArgs {
                 Ok(StringArgs { string, key })
             }
             Err(_) => Ok(StringArgs {
-                key: embedded_resources_build::util::generate_random_bytes(string.len()),
+                key: embre_build::util::generate_random_bytes(string.len()),
                 string,
             }),
         }
@@ -84,7 +84,7 @@ impl Parse for DataArgs {
                 Ok(DataArgs { data, key })
             }
             Err(_) => Ok(DataArgs {
-                key: embedded_resources_build::util::generate_random_bytes(data.len()),
+                key: embre_build::util::generate_random_bytes(data.len()),
                 data,
             }),
         }
