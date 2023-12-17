@@ -4,7 +4,6 @@ mod tests {
     use embre_run::xor_data::XORData;
     use embre_run::xor_string::XORString;
     use std::fs;
-    use std::mem::size_of;
 
     const XOR_DATA: XORData = include_xor_bytes!("_test/cargo.toml", "_test/cargo.toml");
     const XOR_STRING: XORString = include_xor_string!("test string");

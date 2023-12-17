@@ -5,12 +5,12 @@ use syn::parse::{Parse, ParseStream};
 type TokenStream2 = proc_macro2::token_stream::TokenStream;
 
 pub struct LitBytes {
-    litInts: Vec<LitInt>
+    lit_ints: Vec<LitInt>
 }
 
 impl LitBytes {
     pub fn get_bytes(self) -> Vec<u8> {
-        self.litInts.iter().map(|b| b.base10_parse().unwrap()).collect()
+        self.lit_ints.iter().map(|b| b.base10_parse().unwrap()).collect()
     }
 }
 impl Parse for LitBytes {
@@ -41,7 +41,7 @@ impl Parse for LitBytes {
 
         Ok(
             LitBytes {
-                litInts: numbers
+                lit_ints: numbers
             }
         )
     }

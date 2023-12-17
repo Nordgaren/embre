@@ -1,7 +1,7 @@
 use crate::literal_bytes::LitBytes;
 use embre_build::util::xor_bytes;
 use proc_macro::TokenStream;
-use quote::{quote, ToTokens};
+use quote::quote;
 use std::fs;
 use syn::parse::{Parse, ParseStream};
 use syn::token::Comma;

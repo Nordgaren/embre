@@ -65,7 +65,7 @@ pub(crate) fn rsa_encrypt_bytes_old(file: &[u8], key: &[u8]) -> std::io::Result<
 
     while len < plaintext.len() {
         let mut buffer = vec![0; key_size];
-        let mut next_block = plaintext.len() % (len + key_size);
+        let next_block = plaintext.len() % (len + key_size);
         let block_data = &plaintext[len..next_block];
         len += public_key.public_encrypt(block_data, &mut buffer, Padding::PKCS1)?;
         encrypted.extend_from_slice(&buffer[..]);

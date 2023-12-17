@@ -3,7 +3,7 @@ use crate::DataResource;
 use crate::xor_resource::XORResource;
 use crate::xor_string::XORString;
 
-pub type XORData<'a> = XORResource<'a, u8>;
+pub type XORData<'a> = XORResource<'a, DataResource>;
 
 impl XORResource<'_, u8> {
     // implement XORData functionality
