@@ -6,8 +6,8 @@ mod xor_resource;
 pub mod xor_data;
 pub(crate) mod util;
 mod aes_string;
-
 pub struct StringResource;
+#[derive(Debug)]
 pub struct DataResource;
 
 pub trait EmbeddedResource {

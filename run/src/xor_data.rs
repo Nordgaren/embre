@@ -2,10 +2,9 @@ use std::fmt::Display;
 use crate::DataResource;
 use crate::xor_resource::XORResource;
 use crate::xor_string::XORString;
-
 pub type XORData<'a> = XORResource<'a, DataResource>;
 
-impl XORResource<'_, u8> {
+impl XORResource<'_, DataResource> {
     // implement XORData functionality
 }
 impl From<XORString<'static>> for XORData<'static> {

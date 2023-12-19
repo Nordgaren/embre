@@ -34,18 +34,18 @@ impl ResourceBuilder {
         self.config = config;
         self
     }
-    pub fn add_strings_xor(self, strings: &[String]) -> Self {
+    pub fn add_xor_strings(self, strings: &[String]) -> Self {
         let strs: Vec<&str> = strings.iter().map(|s| s.as_str()).collect();
-        self.add_strs_xor(strs.as_slice())
+        self.add_xor_strs(strs.as_slice())
     }
-    pub fn add_strs_xor(mut self, strs: &[&str]) -> Self {
+    pub fn add_xor_strs(mut self, strs: &[&str]) -> Self {
         self.xor_resources.extend(strs.iter().map(|string_name| {
             XORResource::from_str(string_name, generate_random_bytes(string_name.len()))
         }));
 
         self
     }
-    pub fn add_str_xor(mut self, new_string: &str) -> Self {
+    pub fn add_xor_str(mut self, new_string: &str) -> Self {
         self.xor_resources.push(XORResource::from_str(
             new_string,
             generate_random_bytes(new_string.len()),
