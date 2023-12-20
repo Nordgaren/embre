@@ -14,4 +14,7 @@ A crate for encrypting, embedding and comparing encrypted resources to non encry
 ## Goals  
 Right now I want to support as many AES encryption methods as I can, and make macros for each, maybe. I would like to 
 figure out a way to get the AES resource functions to be const compile time methods. Add embedded resource handling, maybe.
-
+I also want the user to be able to define their own implementation for the encryption/decryption process. For example the 
+AESCrypter trait can be implemented for a user defined type, and then used in the `AESResource<'a, T, C: AESCrypter>`type,
+and the program will use the implementation the user defined. This way the user could handle things differently, or use a different
+encryption library, for whatever reason.

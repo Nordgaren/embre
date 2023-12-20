@@ -39,13 +39,13 @@ mod tests {
     #[test]
     fn aes_comparison_operators() {
         let aes_string = include_aes_string!("test string");
-        assert_eq!(
-            aes_string, "test string",
+        assert!(
+            aes_string == "test string",
             "Could not compare AES_STRING and &str"
         );
         let long_aes_string: AESString = include_aes_bytes!("_test/src/lib.rs").into();
-        assert_eq!(
-            long_aes_string, include_str!("lib.rs"),
+        assert!(
+            long_aes_string == include_str!("lib.rs"),
             "Could not compare AES_STRING and &str"
         );
     }

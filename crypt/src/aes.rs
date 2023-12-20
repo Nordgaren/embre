@@ -4,10 +4,16 @@ pub trait AESCrypter {
     type ReturnType;
     fn aes_encrypt_bytes(&self, bytes: &[u8], key: &[u8], iv: Option<&[u8]>) -> Self::ReturnType;
     fn aes_decrypt_bytes(&self, bytes: &[u8], key: &[u8], iv: Option<&[u8]>) -> Self::ReturnType;
-    fn get_cipher(&self) -> Cipher;
+    fn aes_compare_string(&self, bytes: &[u8], key: &[u8], iv: Option<&[u8]>, other: &[u8])
+        -> bool;
 }
 pub struct DefaultAesCrypter {
     cipher: Cipher,
+}
+impl DefaultAesCrypter {
+    pub fn get_cipher(&self) -> Cipher {
+        self.cipher
+    }
 }
 impl Default for DefaultAesCrypter {
     fn default() -> Self {
@@ -22,85 +28,62 @@ impl DefaultAesCrypter {
 impl AESCrypter for DefaultAesCrypter {
     type ReturnType = std::io::Result<Vec<u8>>;
     fn aes_encrypt_bytes(&self, bytes: &[u8], key: &[u8], iv: Option<&[u8]>) -> Self::ReturnType {
-        aes_encrypt_bytes(self.cipher, bytes, key, iv)
+        let mut crypter = Crypter::new(self.cipher, Mode::Encrypt, key, iv)?;
+        crypter.pad(true);
+        let mut out = vec![0; bytes.len() + self.cipher.block_size()];
+        let count = crypter.update(bytes, &mut out)?;
+        let rest = crypter.finalize(&mut out[count..])?;
+        out.truncate(count + rest);
+        Ok(out)
     }
     fn aes_decrypt_bytes(&self, bytes: &[u8], key: &[u8], iv: Option<&[u8]>) -> Self::ReturnType {
-        aes_decrypt_bytes(self.cipher, bytes, key, iv)
+        let mut crypter = Crypter::new(self.cipher, Mode::Decrypt, key, iv)?;
+        crypter.pad(true);
+        let mut out = vec![0; bytes.len() + self.cipher.block_size()];
+        let count = crypter.update(bytes, &mut out)?;
+        let rest = crypter.finalize(&mut out[count..])?;
+        out.truncate(count + rest);
+        Ok(out)
     }
-    fn get_cipher(&self) -> Cipher {
-        self.cipher
-    }
-}
+    fn aes_compare_string(
+        &self,
+        bytes: &[u8],
+        key: &[u8],
+        iv: Option<&[u8]>,
+        other: &[u8],
+    ) -> bool {
+        let block_size = self.cipher.block_size();
+        let size = other.len();
+        let len = size + block_size - (size % block_size);
 
-pub fn aes_decrypt_bytes(
-    cipher: Cipher,
-    file: &[u8],
-    key: &[u8],
-    iv: Option<&[u8]>,
-) -> std::io::Result<Vec<u8>> {
-    let mut crypter = Crypter::new(cipher, Mode::Decrypt, key, iv)?;
-    crypter.pad(true);
-    let mut out = vec![0; file.len() + cipher.block_size()];
-    let count = crypter.update(file, &mut out)?;
-    let rest = crypter.finalize(&mut out[count..])?;
-    out.truncate(count + rest);
-    Ok(out)
-}
-
-pub fn aes_encrypt_bytes(
-    cipher: Cipher,
-    file: &[u8],
-    key: &[u8],
-    iv: Option<&[u8]>,
-) -> std::io::Result<Vec<u8>> {
-    let mut crypter = Crypter::new(cipher, Mode::Encrypt, key, iv)?;
-    crypter.pad(true);
-    let mut out = vec![0; file.len() + cipher.block_size()];
-    let count = crypter.update(file, &mut out)?;
-    let rest = crypter.finalize(&mut out[count..])?;
-    out.truncate(count + rest);
-    Ok(out)
-}
-
-pub fn aes_u8_cmp(
-    cipher: Cipher,
-    buffer: &[u8],
-    key: &[u8],
-    iv: Option<&[u8]>,
-    other: &[u8],
-) -> bool {
-    let block_size = cipher.block_size();
-    let size = other.len();
-    let len = size + block_size - (size % block_size);
-
-    if buffer.len() != len {
-        return false;
-    }
-
-    let mut crypter =
-        Crypter::new(cipher, Mode::Encrypt, key, iv).expect("Could not get Crypter from openssl.");
-
-    let mut temp = [0; 0x100];
-    let mut total = 0;
-    for chunk in other.chunks(block_size) {
-        let out = &mut temp[..block_size * 2];
-        let en = crypter.update(chunk, out).expect("Could not encrypt chunk");
-        if en == 0 {
-            crypter.finalize(out).expect("Could not encrypt chunk");
-        }
-        if out[..block_size] != buffer[total..total + block_size] {
+        if bytes.len() != len {
             return false;
         }
-        total += block_size;
-        out.fill(0);
+
+        let mut crypter = Crypter::new(self.cipher, Mode::Encrypt, key, iv)
+            .expect("Could not get Crypter from openssl.");
+
+        let mut temp = [0; 0x100];
+        let mut total = 0;
+        for chunk in other.chunks(block_size) {
+            let out = &mut temp[..block_size * 2];
+            let en = crypter.update(chunk, out).expect("Could not encrypt chunk");
+            if en == 0 {
+                crypter.finalize(out).expect("Could not encrypt chunk");
+            }
+            if out[..block_size] != bytes[total..total + block_size] {
+                return false;
+            }
+            total += block_size;
+            out.fill(0);
+        }
+
+        true
     }
-
-    true
 }
-
 #[cfg(test)]
 mod tests {
-    use crate::aes::{aes_u8_cmp, AESCrypter, DefaultAesCrypter};
+    use crate::aes::{AESCrypter, DefaultAesCrypter};
 
     #[test]
     fn aes_decrypt() {
@@ -146,12 +129,6 @@ mod tests {
             .aes_encrypt_bytes(&data[..], &key[..], Some(&iv[..]))
             .expect("Could not encrypt test string");
 
-        assert!(aes_u8_cmp(
-            crypter.get_cipher(),
-            &bytes[..],
-            &key[..],
-            Some(&iv[..]),
-            data
-        ));
+        assert!(crypter.aes_compare_string(&bytes[..], &key[..], Some(&iv[..]), data));
     }
 }

@@ -1,6 +1,6 @@
 use embre_crypt::aes::{AESCrypter, DefaultAesCrypter};
 use std::marker::PhantomData;
-
+#[derive(Debug)]
 pub struct AESResource<'a, T, C: AESCrypter = DefaultAesCrypter> {
     pub(super) resource: &'a [u8],
     pub(super) key: &'a [u8],
@@ -41,13 +41,8 @@ impl<T> PartialEq<Self> for AESResource<'_, T> {
 impl<T> Eq for AESResource<'_, T> {}
 impl<T> PartialEq<[u8]> for AESResource<'_, T> {
     fn eq(&self, other: &[u8]) -> bool {
-        embre_crypt::aes::aes_u8_cmp(
-            self.crypter.get_cipher(),
-            self.resource,
-            self.key,
-            self.iv,
-            other,
-        )
+        self.crypter
+            .aes_compare_string(self.resource, self.key, self.iv, other)
     }
 }
 impl<T> PartialEq<&[u8]> for AESResource<'_, T> {

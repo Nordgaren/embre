@@ -3,7 +3,7 @@ use crate::aes::aes_data::AESData;
 use crate::aes::aes_string::AESString;
 use crate::xor::xor_data::XORData;
 use crate::xor::xor_string::XORString;
-use crate::{DataResource, EmbeddedResource, StringResource};
+use crate::{DataResource, StringResource};
 
 // For future
 pub trait EmbeddedResource {

@@ -1,11 +1,11 @@
+use crate::aes::aes_data::AESData;
 use crate::aes::aes_resource::AESResource;
 use crate::{util, StringResource};
-use embre_crypt::aes::{aes_u8_cmp, AESCrypter};
+use embre_crypt::aes::AESCrypter;
 use std::ffi::{CStr, CString, NulError};
 use std::fmt::Display;
 use std::string::FromUtf8Error;
 use widestring::U16CStr;
-use crate::aes::aes_data::AESData;
 
 pub type AESString<'a> = AESResource<'a, StringResource>;
 impl<'a> AESString<'a> {
@@ -62,13 +62,8 @@ impl PartialEq<[u16]> for AESString<'_> {
         let len = other.len().checked_mul(2).unwrap();
         let ptr: *const u8 = other.as_ptr().cast();
         let other = unsafe { std::slice::from_raw_parts(ptr, len) };
-        aes_u8_cmp(
-            self.crypter.get_cipher(),
-            self.resource,
-            self.key,
-            self.iv,
-            other,
-        )
+        self.crypter
+            .aes_compare_string(self.resource, self.key, self.iv, other)
     }
 }
 impl PartialEq<&[u16]> for AESString<'_> {
