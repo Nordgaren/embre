@@ -1,3 +1,4 @@
+#![allow(unused)]
 use crate::resource::{GetResourceName, Resource};
 use crate::util::{aes_encrypt_bytes, make_const_name};
 

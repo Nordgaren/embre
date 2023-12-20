@@ -1,11 +1,11 @@
 use crate::literal_bytes::LitBytes;
 use embre_build::util::xor_bytes;
-use proc_macro::TokenStream;
 use quote::quote;
 use std::fs;
 use syn::parse::{Parse, ParseStream};
 use syn::token::Comma;
 use syn::{parse_macro_input, LitStr};
+use syn::__private::TokenStream;
 
 pub(crate) struct StringArgs {
     string: String,
@@ -37,7 +37,7 @@ impl Parse for StringArgs {
         }
     }
 }
-pub(crate) fn include_xor_string_impl(input: TokenStream) -> TokenStream {
+pub fn include_xor_string_impl(input: TokenStream) -> TokenStream {
     let args = parse_macro_input!(input as StringArgs);
 
     let str = xor_bytes(args.string.as_bytes(), args.key.as_slice());
@@ -90,7 +90,7 @@ impl Parse for DataArgs {
         }
     }
 }
-pub(crate) fn include_xor_bytes_impl(input: TokenStream) -> TokenStream {
+pub fn include_xor_bytes_impl(input: TokenStream) -> TokenStream {
     let args = parse_macro_input!(input as DataArgs);
     let data = xor_bytes(&args.data[..], &args.key[..]);
     let key = args.key;

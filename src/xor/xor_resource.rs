@@ -17,14 +17,20 @@ impl<'a, T> XORResource<'a, T> {
     }
     pub fn to_plaintext_data(&self) -> Vec<u8> {
         let mut chrs = self.resource.to_vec();
-        for i in 0..chrs.len() {
-            chrs[i] ^= self.key[i];
+
+        for (i, chr) in chrs.iter_mut().enumerate() {
+            *chr ^= self.key[i];
         }
 
         chrs
     }
 }
-
+impl<T> PartialEq<Self> for XORResource<'_, T> {
+    fn eq(&self, other: &Self) -> bool {
+        self.resource == other.resource && self.key == other.key
+    }
+}
+impl<T> Eq for XORResource<'_, T> {}
 impl<T> PartialEq<[u8]> for XORResource<'_, T> {
     fn eq(&self, other: &[u8]) -> bool {
         util::xor_u8_cmp(self.resource, self.key, other)

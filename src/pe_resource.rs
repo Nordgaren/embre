@@ -1,5 +1,6 @@
+#![allow(unused)]
 use crate::{StringResource, DataResource, EmbeddedResource};
-use crate::xor_resource::XORResource;
+use crate::xor::xor_resource::XORResource;
 
 // const PE100:PEResource = PEResource(100);
 pub struct PEResource {

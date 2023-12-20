@@ -1,3 +1,4 @@
+#![allow(unused)]
 use openssl::encrypt::{Decrypter, Encrypter};
 use openssl::pkey::PKey;
 use openssl::rsa::{Padding, Rsa};

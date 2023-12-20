@@ -34,11 +34,6 @@ impl Parse for LitBytes {
             is_comma = ! is_comma;
         }
 
-        if !input.is_empty() {
-            let err = input.error("Expected end of input");
-            return Err(err);
-        }
-
         Ok(
             LitBytes {
                 lit_ints: numbers

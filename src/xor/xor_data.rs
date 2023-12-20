@@ -1,7 +1,7 @@
 use std::fmt::Display;
 use crate::DataResource;
-use crate::xor_resource::XORResource;
-use crate::xor_string::XORString;
+use crate::xor::xor_resource::XORResource;
+use crate::xor::xor_string::XORString;
 pub type XORData<'a> = XORResource<'a, DataResource>;
 
 impl XORResource<'_, DataResource> {

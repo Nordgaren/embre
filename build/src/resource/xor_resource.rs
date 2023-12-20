@@ -1,3 +1,4 @@
+#![allow(unused)]
 use crate::resource::{GetResourceName, Resource};
 use crate::util::{make_const_name, xor_bytes};
 
