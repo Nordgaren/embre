@@ -1,7 +1,7 @@
 use crate::aes::aes_resource::AESResource;
 use crate::aes::aes_string::AESString;
 use crate::DataResource;
-use std::fmt::Display;
+use std::fmt::{Debug, Display};
 pub type AESData<'a> = AESResource<'a, DataResource>;
 
 impl AESResource<'_, DataResource> {
@@ -20,7 +20,6 @@ impl From<AESString<'static>> for AESData<'static> {
 }
 impl<'a> Display for AESData<'a> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let data = self.to_plaintext_data();
-        write!(f, "{:?}", data)
+        self.to_plaintext_data().expect("Could not decrypt AESData").fmt(f)
     }
 }
