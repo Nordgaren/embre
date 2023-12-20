@@ -1,3 +1,4 @@
+#![doc = include_str!("../README.md")]
 use embre_core::aes::{include_aes_bytes_impl, include_aes_string_impl};
 use embre_core::xor::{include_xor_bytes_impl, include_xor_string_impl};
 use proc_macro::TokenStream;

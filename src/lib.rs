@@ -1,3 +1,4 @@
+#![doc = include_str!("../README.md")]
 #![allow(unused)]
 use embre_macro::include_aes_bytes;
 use embre_macro::include_aes_string;
