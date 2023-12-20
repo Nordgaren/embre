@@ -63,7 +63,7 @@ impl PartialEq<[u16]> for AESString<'_> {
         let ptr: *const u8 = other.as_ptr().cast();
         let other = unsafe { std::slice::from_raw_parts(ptr, len) };
         self.crypter
-            .aes_compare_string(self.resource, self.key, self.iv, other)
+            .aes_compare_slice(self.resource, self.key, self.iv, other)
     }
 }
 impl PartialEq<&[u16]> for AESString<'_> {

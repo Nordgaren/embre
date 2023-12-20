@@ -42,7 +42,7 @@ impl<T> Eq for AESResource<'_, T> {}
 impl<T> PartialEq<[u8]> for AESResource<'_, T> {
     fn eq(&self, other: &[u8]) -> bool {
         self.crypter
-            .aes_compare_string(self.resource, self.key, self.iv, other)
+            .aes_compare_slice(self.resource, self.key, self.iv, other)
     }
 }
 impl<T> PartialEq<&[u8]> for AESResource<'_, T> {
