@@ -10,11 +10,6 @@ pub trait AESCrypter {
 pub struct DefaultAesCrypter {
     cipher: Cipher,
 }
-impl DefaultAesCrypter {
-    pub fn get_cipher(&self) -> Cipher {
-        self.cipher
-    }
-}
 impl Default for DefaultAesCrypter {
     fn default() -> Self {
         Self::new(Cipher::aes_256_cbc())
@@ -23,6 +18,9 @@ impl Default for DefaultAesCrypter {
 impl DefaultAesCrypter {
     pub fn new(cipher: Cipher) -> Self {
         DefaultAesCrypter { cipher }
+    }
+    pub fn get_cipher(&self) -> Cipher {
+        self.cipher
     }
 }
 impl AESCrypter for DefaultAesCrypter {
