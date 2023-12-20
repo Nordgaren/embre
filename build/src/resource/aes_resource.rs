@@ -18,11 +18,10 @@ impl AESResource {
 
         AESResource {
             resource_name: make_const_name(string_name),
-            encrypted_resource: Resource::new(aes_encrypt_bytes(
-                string_name.as_bytes(),
-                &key_bytes[..],
-                &iv[..],
-            ), usize::MAX),
+            encrypted_resource: Resource::new(
+                aes_encrypt_bytes(string_name.as_bytes(), &key_bytes[..], &iv[..]),
+                usize::MAX,
+            ),
             key: Resource::new(key_bytes, usize::MAX),
             iv: None,
         }
@@ -34,4 +33,3 @@ impl GetResourceName for AESResource {
         &self.resource_name
     }
 }
-

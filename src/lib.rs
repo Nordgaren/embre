@@ -1,18 +1,14 @@
-use crate::xor::xor_resource::XORResource;
+#![allow(unused)]
+use embre_macro::include_aes_bytes;
+use embre_macro::include_aes_string;
+use embre_macro::include_xor_bytes;
+use embre_macro::include_xor_string;
 
-mod pe_resource;
-pub(crate) mod util;
 pub mod aes;
+mod embedded_resource;
+pub(crate) mod util;
 pub mod xor;
-
+#[derive(Debug)]
 pub struct StringResource;
 #[derive(Debug)]
 pub struct DataResource;
-
-pub trait EmbeddedResource {
-    fn get_resource(self, offset: usize, len: usize) -> &'static [u8];
-    fn get_xor_string(self, data_offset: usize, key_offset: usize, len: usize) -> XORResource<'static, StringResource>;
-    fn get_xor_data(self, data_offset: usize, key_offset: usize, len: usize) -> XORResource<'static, DataResource>;
-}
-
-

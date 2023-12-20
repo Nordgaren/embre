@@ -81,7 +81,10 @@ pub fn xor_w_str_cmp_ignore_case(buffer: &[u8], key: &[u8], other: &[u16]) -> bo
 }
 
 #[inline(always)]
-pub fn common_string_fmt(f: &mut std::fmt::Formatter<'_>, str_result: Result<String, FromUtf8Error>) -> std::fmt::Result {
+pub fn common_string_fmt(
+    f: &mut std::fmt::Formatter<'_>,
+    str_result: Result<String, FromUtf8Error>,
+) -> std::fmt::Result {
     let str = match str_result {
         Ok(s) => s,
         Err(_) => return Err(Error),

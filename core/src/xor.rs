@@ -2,10 +2,10 @@ use crate::literal_bytes::LitBytes;
 use embre_build::util::xor_bytes;
 use quote::quote;
 use std::fs;
+use syn::__private::TokenStream;
 use syn::parse::{Parse, ParseStream};
 use syn::token::Comma;
 use syn::{parse_macro_input, LitStr};
-use syn::__private::TokenStream;
 
 pub(crate) struct StringArgs {
     string: String,

@@ -1,6 +1,6 @@
 pub mod config;
-pub mod resource_builder;
 mod resource;
+pub mod resource_builder;
 #[cfg(test)]
 mod tests;
 pub mod util;
@@ -11,4 +11,3 @@ macro_rules! p {
         println!("cargo:warning={}", format!($($tokens)*))
     }
 }
-

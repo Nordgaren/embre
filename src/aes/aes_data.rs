@@ -1,7 +1,7 @@
-use std::fmt::Display;
-use crate::DataResource;
 use crate::aes::aes_resource::AESResource;
 use crate::aes::aes_string::AESString;
+use crate::DataResource;
+use std::fmt::Display;
 pub type AESData<'a> = AESResource<'a, DataResource>;
 
 impl AESResource<'_, DataResource> {

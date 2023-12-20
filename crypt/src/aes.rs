@@ -16,9 +16,7 @@ impl Default for DefaultAesCrypter {
 }
 impl DefaultAesCrypter {
     pub fn new(cipher: Cipher) -> Self {
-        DefaultAesCrypter {
-            cipher
-        }
+        DefaultAesCrypter { cipher }
     }
 }
 impl AESCrypter for DefaultAesCrypter {
@@ -34,7 +32,12 @@ impl AESCrypter for DefaultAesCrypter {
     }
 }
 
-pub fn aes_decrypt_bytes(cipher: Cipher, file: &[u8], key: &[u8], iv: Option<&[u8]>) -> std::io::Result<Vec<u8>> {
+pub fn aes_decrypt_bytes(
+    cipher: Cipher,
+    file: &[u8],
+    key: &[u8],
+    iv: Option<&[u8]>,
+) -> std::io::Result<Vec<u8>> {
     let mut crypter = Crypter::new(cipher, Mode::Decrypt, key, iv)?;
     crypter.pad(true);
     let mut out = vec![0; file.len() + cipher.block_size()];
@@ -44,7 +47,12 @@ pub fn aes_decrypt_bytes(cipher: Cipher, file: &[u8], key: &[u8], iv: Option<&[u
     Ok(out)
 }
 
-pub fn aes_encrypt_bytes(cipher: Cipher, file: &[u8], key: &[u8], iv: Option<&[u8]>) -> std::io::Result<Vec<u8>> {
+pub fn aes_encrypt_bytes(
+    cipher: Cipher,
+    file: &[u8],
+    key: &[u8],
+    iv: Option<&[u8]>,
+) -> std::io::Result<Vec<u8>> {
     let mut crypter = Crypter::new(cipher, Mode::Encrypt, key, iv)?;
     crypter.pad(true);
     let mut out = vec![0; file.len() + cipher.block_size()];
@@ -54,18 +62,25 @@ pub fn aes_encrypt_bytes(cipher: Cipher, file: &[u8], key: &[u8], iv: Option<&[u
     Ok(out)
 }
 
-pub fn aes_u8_cmp(cipher: Cipher, buffer: &[u8], key: &[u8], iv: Option<&[u8]>, other: &[u8]) -> bool {
+pub fn aes_u8_cmp(
+    cipher: Cipher,
+    buffer: &[u8],
+    key: &[u8],
+    iv: Option<&[u8]>,
+    other: &[u8],
+) -> bool {
     let block_size = cipher.block_size();
     let size = other.len();
-    let len = size+ block_size - (size % block_size);
+    let len = size + block_size - (size % block_size);
 
     if buffer.len() != len {
         return false;
     }
 
-    let mut crypter = Crypter::new(cipher, Mode::Encrypt, key, iv).expect("Could not get Crypter from openssl.");
+    let mut crypter =
+        Crypter::new(cipher, Mode::Encrypt, key, iv).expect("Could not get Crypter from openssl.");
 
-    let mut temp = [0;0x100];
+    let mut temp = [0; 0x100];
     let mut total = 0;
     for chunk in other.chunks(block_size) {
         let out = &mut temp[..block_size * 2];
@@ -74,7 +89,7 @@ pub fn aes_u8_cmp(cipher: Cipher, buffer: &[u8], key: &[u8], iv: Option<&[u8]>, 
             crypter.finalize(out).expect("Could not encrypt chunk");
         }
         if out[..block_size] != buffer[total..total + block_size] {
-            return false
+            return false;
         }
         total += block_size;
         out.fill(0);
@@ -85,7 +100,7 @@ pub fn aes_u8_cmp(cipher: Cipher, buffer: &[u8], key: &[u8], iv: Option<&[u8]>, 
 
 #[cfg(test)]
 mod tests {
-    use crate::aes::{AESCrypter, DefaultAesCrypter};
+    use crate::aes::{aes_u8_cmp, AESCrypter, DefaultAesCrypter};
 
     #[test]
     fn aes_decrypt() {
@@ -95,7 +110,8 @@ mod tests {
         ];
         let key: Vec<u8> = (1..=32).collect();
         let crypter = DefaultAesCrypter::default();
-        let bytes = crypter.aes_decrypt_bytes(&data, &key[..], Some(&(1..=16).collect::<Vec<u8>>()[..]))
+        let bytes = crypter
+            .aes_decrypt_bytes(&data, &key[..], Some(&(1..=16).collect::<Vec<u8>>()[..]))
             .expect("Could not decrypt test string");
         assert_eq!(&bytes[..], b"aes_test_string");
     }
@@ -105,12 +121,13 @@ mod tests {
         let data = b"aes_test_string";
         let key: Vec<u8> = (1..=32).collect();
         let crypter = DefaultAesCrypter::default();
-        let bytes = crypter.aes_encrypt_bytes(
-            &data[..],
-            &key[..],
-            Some(&(1..=16).collect::<Vec<u8>>()[..]),
-        )
-        .expect("Could not encrypt test string");
+        let bytes = crypter
+            .aes_encrypt_bytes(
+                &data[..],
+                &key[..],
+                Some(&(1..=16).collect::<Vec<u8>>()[..]),
+            )
+            .expect("Could not encrypt test string");
         assert_eq!(
             &bytes[..],
             [
@@ -118,5 +135,23 @@ mod tests {
                 0xDE, 0xF9
             ]
         );
+    }
+    #[test]
+    fn aes_string_compare() {
+        let data = b"aes_test_string";
+        let key: Vec<u8> = (1..=32).collect();
+        let iv = (1..=16).collect::<Vec<u8>>();
+        let crypter = DefaultAesCrypter::default();
+        let bytes = crypter
+            .aes_encrypt_bytes(&data[..], &key[..], Some(&iv[..]))
+            .expect("Could not encrypt test string");
+
+        assert!(aes_u8_cmp(
+            crypter.get_cipher(),
+            &bytes[..],
+            &key[..],
+            Some(&iv[..]),
+            data
+        ));
     }
 }

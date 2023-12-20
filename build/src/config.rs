@@ -7,7 +7,11 @@ pub struct BuildConfig {
 }
 
 impl BuildConfig {
-    pub fn new(resource_id: u32, resource_name: String, pad_range: RangeInclusive<usize>) -> BuildConfig {
+    pub fn new(
+        resource_id: u32,
+        resource_name: String,
+        pad_range: RangeInclusive<usize>,
+    ) -> BuildConfig {
         BuildConfig {
             resource_id,
             resource_name,

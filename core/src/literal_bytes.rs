@@ -1,16 +1,19 @@
 use proc_macro2::Group;
 use quote::ToTokens;
-use syn::LitInt;
 use syn::parse::{Parse, ParseStream};
+use syn::LitInt;
 type TokenStream2 = proc_macro2::token_stream::TokenStream;
 
 pub struct LitBytes {
-    lit_ints: Vec<LitInt>
+    lit_ints: Vec<LitInt>,
 }
 
 impl LitBytes {
     pub fn get_bytes(self) -> Vec<u8> {
-        self.lit_ints.iter().map(|b| b.base10_parse().unwrap()).collect()
+        self.lit_ints
+            .iter()
+            .map(|b| b.base10_parse().unwrap())
+            .collect()
     }
 }
 impl Parse for LitBytes {
@@ -25,19 +28,14 @@ impl Parse for LitBytes {
             if is_comma {
                 let comma: TokenStream2 = syn::parse2(t.to_token_stream())?;
                 assert_eq!(comma.to_string(), ",");
-            }
-            else {
+            } else {
                 let number: LitInt = syn::parse2(t.to_token_stream())?;
                 numbers.push(number);
             }
 
-            is_comma = ! is_comma;
+            is_comma = !is_comma;
         }
 
-        Ok(
-            LitBytes {
-                lit_ints: numbers
-            }
-        )
+        Ok(LitBytes { lit_ints: numbers })
     }
 }

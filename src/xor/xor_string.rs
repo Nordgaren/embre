@@ -1,11 +1,11 @@
-use crate::xor::xor_resource::XORResource;
 use crate::util;
+use crate::xor::xor_data::XORData;
+use crate::xor::xor_resource::XORResource;
 use core::ffi::CStr;
 use std::ffi::{CString, NulError};
 use std::fmt::Display;
 use std::string::FromUtf8Error;
 use widestring::U16CStr;
-use crate::xor::xor_data::XORData;
 
 pub type XORString<'a> = XORResource<'a, String>;
 impl<'a> XORString<'a> {
@@ -18,7 +18,7 @@ impl<'a> XORString<'a> {
         CString::new(self.to_plaintext_data())
     }
 }
-impl From<XORData<'static>> for  XORString<'static> {
+impl From<XORData<'static>> for XORString<'static> {
     fn from(data: XORData<'_>) -> XORString<'_> {
         XORString {
             resource: data.resource,
