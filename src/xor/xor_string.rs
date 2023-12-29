@@ -1,16 +1,16 @@
-use crate::util;
 use crate::xor::xor_data::XORData;
 use crate::xor::xor_resource::XORResource;
+use crate::{util, StringResource};
 use core::ffi::CStr;
 use std::ffi::{CString, NulError};
 use std::fmt::Display;
 use std::string::FromUtf8Error;
-use widestring::U16CStr;
+use widestring::{U16CStr, U16CString};
 
-pub type XORString<'a> = XORResource<'a, String>;
+pub type XORString<'a> = XORResource<'a, StringResource>;
 impl<'a> XORString<'a> {
     // This returns the original plaintext version of the string in a new String
-    pub fn to_plaintext_string(&self) -> Result<String, FromUtf8Error> {
+    fn to_plaintext_string(&self) -> Result<String, FromUtf8Error> {
         String::from_utf8(self.to_plaintext_data())
     }
     // This returns the original plaintext version of the string in a new null terminated CString
@@ -38,14 +38,39 @@ impl PartialEq<&str> for XORString<'_> {
         self.eq(other.as_bytes())
     }
 }
+impl PartialEq<XORString<'_>> for &str {
+    fn eq(&self, other: &XORString<'_>) -> bool {
+        other.eq(self)
+    }
+}
 impl PartialEq<String> for XORString<'_> {
     fn eq(&self, other: &String) -> bool {
         self.eq(other.as_bytes())
     }
 }
+impl PartialEq<XORString<'_>> for String {
+    fn eq(&self, other: &XORString<'_>) -> bool {
+        other.eq(self.as_bytes())
+    }
+}
 impl PartialEq<CStr> for XORString<'_> {
     fn eq(&self, other: &CStr) -> bool {
         self.eq(other.to_bytes())
+    }
+}
+impl PartialEq<XORString<'_>> for CStr {
+    fn eq(&self, other: &XORString<'_>) -> bool {
+        other.eq(self.to_bytes())
+    }
+}
+impl PartialEq<CString> for XORString<'_> {
+    fn eq(&self, other: &CString) -> bool {
+        self.eq(other.to_bytes())
+    }
+}
+impl PartialEq<XORString<'_>> for CString {
+    fn eq(&self, other: &XORString<'_>) -> bool {
+        other.eq(self.to_bytes())
     }
 }
 // EQ for wide strings
@@ -54,13 +79,38 @@ impl PartialEq<[u16]> for XORString<'_> {
         util::xor_w_str_cmp(self.resource, self.key, other)
     }
 }
+impl PartialEq<XORString<'_>> for [u16] {
+    fn eq(&self, other: &XORString<'_>) -> bool {
+        util::xor_w_str_cmp(other.resource, other.key, self)
+    }
+}
 impl PartialEq<&[u16]> for XORString<'_> {
     fn eq(&self, other: &&[u16]) -> bool {
         self.eq(*other)
     }
 }
+impl PartialEq<XORString<'_>> for &[u16] {
+    fn eq(&self, other: &XORString<'_>) -> bool {
+        other.eq(self)
+    }
+}
 impl PartialEq<U16CStr> for XORString<'_> {
     fn eq(&self, other: &U16CStr) -> bool {
         self.eq(other.as_slice())
+    }
+}
+impl PartialEq<XORString<'_>> for U16CStr {
+    fn eq(&self, other: &XORString<'_>) -> bool {
+        other.eq(self.as_slice())
+    }
+}
+impl PartialEq<U16CString> for XORString<'_> {
+    fn eq(&self, other: &U16CString) -> bool {
+        self.eq(other.as_slice())
+    }
+}
+impl PartialEq<XORString<'_>> for U16CString {
+    fn eq(&self, other: &XORString<'_>) -> bool {
+        other.eq(self.as_slice())
     }
 }

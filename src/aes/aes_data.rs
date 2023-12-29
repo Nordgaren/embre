@@ -20,6 +20,8 @@ impl From<AESString<'static>> for AESData<'static> {
 }
 impl<'a> Display for AESData<'a> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        self.to_plaintext_data().expect("Could not decrypt AESData").fmt(f)
+        self.to_plaintext_data()
+            .expect("Could not decrypt AESData")
+            .fmt(f)
     }
 }

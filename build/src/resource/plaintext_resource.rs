@@ -11,7 +11,7 @@ impl PlaintextResource {
     pub fn new(string_name: &str) -> PlaintextResource {
         PlaintextResource {
             resource_name: make_const_name(string_name),
-            resource: Resource::new(string_name.as_bytes().to_vec(), usize::MAX),
+            resource: Resource::new(string_name.as_bytes().to_vec()),
         }
     }
 }

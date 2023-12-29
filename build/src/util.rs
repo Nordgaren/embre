@@ -303,13 +303,29 @@ where
         .collect()
 }
 pub(crate) fn make_const_name(string: &str) -> String {
-    let replace = [" ", ",", "."];
-
+    let underscores = [" ", ",", "."];
     let mut const_name = string.to_uppercase();
 
-    for pattern in replace {
+    for pattern in underscores {
         const_name = const_name.replace(pattern, "_")
     }
 
-    const_name.replace("\0", "")
+    let one: Vec<char> = ('!'..',').collect();
+    let two: Vec<char> = (':'..'A').collect();
+    let three: Vec<char> = ('['..'_').collect();
+    let four: Vec<char> = ('{'..='~').collect();
+
+    let delete = ['\0', '!', '\"', '-', '/', '`'];
+
+    for pattern in delete
+        .iter()
+        .chain(one.iter())
+        .chain(two.iter())
+        .chain(three.iter())
+        .chain(four.iter())
+    {
+        const_name = const_name.replace(*pattern, "")
+    }
+
+    const_name
 }

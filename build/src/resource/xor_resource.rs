@@ -10,27 +10,17 @@ pub(crate) struct XORResource {
 
 impl XORResource {
     pub fn new(resource_name: &str, plaintext_bytes: &[u8], key_bytes: Vec<u8>) -> XORResource {
+        if plaintext_bytes.len() > key_bytes.len() {
+            panic!("string and key length do not match {}", resource_name)
+        }
         XORResource {
             resource_name: make_const_name(resource_name),
-            encrypted_resource: Resource::new(
-                xor_bytes(plaintext_bytes, &key_bytes[..]),
-                usize::MAX,
-            ),
-            key: Resource::new(key_bytes, usize::MAX),
+            encrypted_resource: Resource::new(xor_bytes(plaintext_bytes, &key_bytes[..])),
+            key: Resource::new(key_bytes),
         }
     }
-    pub fn from_str(resource_name: &str, key_bytes: Vec<u8>) -> XORResource {
-        if resource_name.len() > key_bytes.len() {
-            panic!("")
-        }
-        XORResource {
-            resource_name: make_const_name(resource_name),
-            encrypted_resource: Resource::new(
-                xor_bytes(resource_name.as_bytes(), &key_bytes[..]),
-                usize::MAX,
-            ),
-            key: Resource::new(key_bytes, usize::MAX),
-        }
+    pub fn from_str(string: &str, key_bytes: Vec<u8>) -> XORResource {
+        XORResource::new(string, string.as_bytes(), key_bytes)
     }
 }
 

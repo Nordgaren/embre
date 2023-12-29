@@ -6,9 +6,9 @@ pub use embre_macro::include_xor_bytes;
 pub use embre_macro::include_xor_string;
 
 pub mod aes;
-pub mod xor;
+pub mod embedded_resource;
 pub(crate) mod util;
-mod embedded_resource;
+pub mod xor;
 #[derive(Debug)]
 pub struct StringResource;
 #[derive(Debug)]

@@ -16,6 +16,15 @@ impl<'a, T> AESResource<'a, T> {
         self.crypter
             .aes_decrypt_bytes(self.resource, self.key, self.iv)
     }
+    pub fn get_encrypted_slice(&self) -> &'a [u8] {
+        self.resource
+    }
+    pub fn get_key(&self) -> &'a [u8] {
+        self.key
+    }
+    pub fn get_iv(&self) -> Option<&'a [u8]> {
+        self.iv
+    }
 }
 impl<'a, T, C: AESCrypter> AESResource<'a, T, C> {
     pub fn new_from(
@@ -45,13 +54,30 @@ impl<T> PartialEq<[u8]> for AESResource<'_, T> {
             .aes_compare_slice(self.resource, self.key, self.iv, other)
     }
 }
+impl<T> PartialEq<AESResource<'_, T>> for [u8] {
+    fn eq(&self, other: &AESResource<'_, T>) -> bool {
+        other
+            .crypter
+            .aes_compare_slice(other.resource, other.key, other.iv, self)
+    }
+}
 impl<T> PartialEq<&[u8]> for AESResource<'_, T> {
     fn eq(&self, other: &&[u8]) -> bool {
         self.eq(*other)
     }
 }
+impl<T> PartialEq<AESResource<'_, T>> for &[u8] {
+    fn eq(&self, other: &AESResource<'_, T>) -> bool {
+        other.eq(self)
+    }
+}
 impl<T> PartialEq<Vec<u8>> for AESResource<'_, T> {
     fn eq(&self, other: &Vec<u8>) -> bool {
         self.eq(&other[..])
+    }
+}
+impl<T> PartialEq<AESResource<'_, T>> for Vec<u8> {
+    fn eq(&self, other: &AESResource<'_, T>) -> bool {
+        other.eq(&self[..])
     }
 }

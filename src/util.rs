@@ -9,6 +9,7 @@ const CASE_BIT: u8 = 0x20;
 const RANGE_START: u8 = b'A';
 const RANGE_END: u8 = b'Z';
 const CASE_RANGE: RangeInclusive<u8> = RANGE_START..=RANGE_END;
+#[inline(always)]
 pub fn xor_u8_cmp(buffer: &[u8], key: &[u8], other: &[u8]) -> bool {
     if buffer.len() != other.len() {
         return false;
@@ -25,6 +26,7 @@ pub fn xor_u8_cmp(buffer: &[u8], key: &[u8], other: &[u8]) -> bool {
 
     true
 }
+#[inline(always)]
 pub fn xor_str_cmp_ignore_case(buffer: &[u8], key: &[u8], other: &[u8]) -> bool {
     if buffer.len() != other.len() {
         return false;
@@ -44,6 +46,7 @@ pub fn xor_str_cmp_ignore_case(buffer: &[u8], key: &[u8], other: &[u8]) -> bool 
 
     true
 }
+#[inline(always)]
 pub fn xor_w_str_cmp(buffer: &[u8], key: &[u8], other: &[u16]) -> bool {
     if buffer.len() != other.len() {
         return false;
@@ -60,6 +63,7 @@ pub fn xor_w_str_cmp(buffer: &[u8], key: &[u8], other: &[u16]) -> bool {
 
     true
 }
+#[inline(always)]
 pub fn xor_w_str_cmp_ignore_case(buffer: &[u8], key: &[u8], other: &[u16]) -> bool {
     if buffer.len() != other.len() {
         return false;

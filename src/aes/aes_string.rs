@@ -5,7 +5,7 @@ use embre_crypt::aes::AESCrypter;
 use std::ffi::{CStr, CString, NulError};
 use std::fmt::Display;
 use std::string::FromUtf8Error;
-use widestring::U16CStr;
+use widestring::{U16CStr, U16CString};
 
 pub type AESString<'a> = AESResource<'a, StringResource>;
 impl<'a> AESString<'a> {
@@ -46,9 +46,19 @@ impl PartialEq<&str> for AESString<'_> {
         self.eq(other.as_bytes())
     }
 }
+impl PartialEq<AESString<'_>> for &str {
+    fn eq(&self, other: &AESString<'_>) -> bool {
+        other.eq(self.as_bytes())
+    }
+}
 impl PartialEq<String> for AESString<'_> {
     fn eq(&self, other: &String) -> bool {
         self.eq(other.as_bytes())
+    }
+}
+impl PartialEq<AESString<'_>> for String {
+    fn eq(&self, other: &AESString<'_>) -> bool {
+        other.eq(self.as_bytes())
     }
 }
 impl PartialEq<CStr> for AESString<'_> {
@@ -56,14 +66,35 @@ impl PartialEq<CStr> for AESString<'_> {
         self.eq(other.to_bytes())
     }
 }
+impl PartialEq<AESString<'_>> for CStr {
+    fn eq(&self, other: &AESString<'_>) -> bool {
+        other.eq(self.to_bytes())
+    }
+}
+impl PartialEq<CString> for AESString<'_> {
+    fn eq(&self, other: &CString) -> bool {
+        self.eq(other.to_bytes())
+    }
+}
+impl PartialEq<AESString<'_>> for CString {
+    fn eq(&self, other: &AESString<'_>) -> bool {
+        other.eq(self.to_bytes())
+    }
+}
 // EQ for wide strings
 impl PartialEq<[u16]> for AESString<'_> {
     fn eq(&self, other: &[u16]) -> bool {
-        let len = other.len().checked_mul(2).unwrap();
+        // @TODO I need to make an aes_compare_wstr_to_str that converts the u16s to u8s one block at a time.
+        let len = other.len() * 2;
         let ptr: *const u8 = other.as_ptr().cast();
         let other = unsafe { std::slice::from_raw_parts(ptr, len) };
         self.crypter
             .aes_compare_slice(self.resource, self.key, self.iv, other)
+    }
+}
+impl PartialEq<AESString<'_>> for [u16] {
+    fn eq(&self, other: &AESString<'_>) -> bool {
+        other.eq(self)
     }
 }
 impl PartialEq<&[u16]> for AESString<'_> {
@@ -71,8 +102,28 @@ impl PartialEq<&[u16]> for AESString<'_> {
         self.eq(*other)
     }
 }
+impl PartialEq<AESString<'_>> for &[u16] {
+    fn eq(&self, other: &AESString<'_>) -> bool {
+        other.eq(self)
+    }
+}
 impl PartialEq<U16CStr> for AESString<'_> {
     fn eq(&self, other: &U16CStr) -> bool {
         self.eq(other.as_slice())
+    }
+}
+impl PartialEq<AESString<'_>> for U16CStr {
+    fn eq(&self, other: &AESString<'_>) -> bool {
+        other.eq(self)
+    }
+}
+impl PartialEq<U16CString> for AESString<'_> {
+    fn eq(&self, other: &U16CString) -> bool {
+        self.eq(other.as_slice())
+    }
+}
+impl PartialEq<AESString<'_>> for U16CString {
+    fn eq(&self, other: &AESString<'_>) -> bool {
+        other.eq(self)
     }
 }

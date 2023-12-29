@@ -205,7 +205,7 @@ pub fn include_aes_bytes_impl(input: TokenStream) -> TokenStream {
             const BYTES: [u8; #len] = [ #(#data , )* ];
             const KEY: [u8; #key_len] = [ #(#key , )* ];
             const IV: Option<&'static [u8]> = Some(&[ #(#iv , )* ]);
-            AESString::new(&BYTES, &KEY, IV)
+            AESData::new(&BYTES, &KEY, IV)
         }
     );
 

@@ -5,9 +5,12 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [dependencies]
-embre-crypt = { path = "crypt"}
-embre-macro = { path = "macro"}
+embre-crypt = { path = "crypt" }
+embre-macro = { path = "macro" }
 widestring = "1.0.2"
+
+[features]
+DefaultPEResource = []
 
 [workspace]
 members = [

@@ -45,11 +45,45 @@ impl ResourceBuilder {
 
         self
     }
-    pub fn add_xor_str(mut self, new_string: &str) -> Self {
+    pub fn add_xor_str(mut self, string: &str) -> Self {
         self.xor_resources.push(XORResource::from_str(
-            new_string,
-            generate_random_bytes(new_string.len()),
+            string,
+            generate_random_bytes(string.len()),
         ));
+        self
+    }
+    pub fn add_named_xor_str(mut self, resource_name: &str, string: &str) -> Self {
+        self.xor_resources.push(XORResource::new(
+            resource_name,
+            string.as_bytes(),
+            generate_random_bytes(string.len()),
+        ));
+        self
+    }
+    pub fn add_aes_str(mut self, string: &str) -> Self {
+        self.aes_resources
+            .push(AESResource::from_str(string, None, None));
+        self
+    }
+    pub fn add_named_aes_str(mut self, resource_name: &str, string: &str) -> Self {
+        self.aes_resources.push(AESResource::new(
+            resource_name,
+            string.as_bytes(),
+            None,
+            None,
+        ));
+        self
+    }
+    pub fn add_aes_strings(self, strings: &[String]) -> Self {
+        let strs: Vec<&str> = strings.iter().map(|s| s.as_str()).collect();
+        self.add_xor_strs(strs.as_slice())
+    }
+    pub fn add_aes_strs(mut self, strs: &[&str]) -> Self {
+        self.aes_resources.extend(
+            strs.iter()
+                .map(|string_name| AESResource::from_str(string_name, None, None)),
+        );
+
         self
     }
     pub fn build_resource_binary(mut self) -> Self {
@@ -59,9 +93,7 @@ impl ResourceBuilder {
         for resource in self.aes_resources.iter_mut() {
             resources.push(&mut resource.encrypted_resource);
             resources.push(&mut resource.key);
-            if let Some(iv) = resource.iv.as_mut() {
-                resources.push(iv)
-            }
+            resources.push(&mut resource.iv)
         }
 
         for resource in self.xor_resources.iter_mut() {
@@ -96,14 +128,14 @@ impl ResourceBuilder {
         self
     }
     pub fn build_consts_file(self) -> Self {
-        let mut consts = vec!["#![allow(unused)]".to_string()];
+        let mut consts = vec![];
 
         consts.push(format!(
             "pub const {}: u32 = {:#X};",
             "RESOURCE_ID", self.config.resource_id
         ));
 
-        consts.push(format!("pub const {}: usize = {:#X};", "RT_RCDATA", 10));
+        consts.push(format!("pub const {}: u32 = {:#X};", "RT_RCDATA", 10));
 
         self.xor_resources.iter().for_each(|string| {
             consts.push(format!(

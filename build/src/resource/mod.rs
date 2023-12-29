@@ -8,8 +8,11 @@ pub(crate) struct Resource {
 }
 
 impl Resource {
-    pub fn new(bytes: Vec<u8>, offset: usize) -> Self {
-        Resource { bytes, offset }
+    pub fn new(bytes: Vec<u8>) -> Self {
+        Resource {
+            bytes,
+            offset: usize::MAX,
+        }
     }
 }
 

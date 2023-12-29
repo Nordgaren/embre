@@ -4,8 +4,7 @@ pub trait AESCrypter {
     type ReturnType;
     fn aes_encrypt_bytes(&self, bytes: &[u8], key: &[u8], iv: Option<&[u8]>) -> Self::ReturnType;
     fn aes_decrypt_bytes(&self, bytes: &[u8], key: &[u8], iv: Option<&[u8]>) -> Self::ReturnType;
-    fn aes_compare_slice(&self, bytes: &[u8], key: &[u8], iv: Option<&[u8]>, other: &[u8])
-                         -> bool;
+    fn aes_compare_slice(&self, bytes: &[u8], key: &[u8], iv: Option<&[u8]>, other: &[u8]) -> bool;
 }
 pub struct DefaultAesCrypter {
     cipher: Cipher,
@@ -25,7 +24,12 @@ impl DefaultAesCrypter {
 }
 impl AESCrypter for DefaultAesCrypter {
     type ReturnType = std::io::Result<Vec<u8>>;
-    fn aes_encrypt_bytes(&self, encrypted: &[u8], key: &[u8], iv: Option<&[u8]>) -> Self::ReturnType {
+    fn aes_encrypt_bytes(
+        &self,
+        encrypted: &[u8],
+        key: &[u8],
+        iv: Option<&[u8]>,
+    ) -> Self::ReturnType {
         let mut crypter = Crypter::new(self.cipher, Mode::Encrypt, key, iv)?;
         crypter.pad(true);
         let mut out = vec![0; encrypted.len() + self.cipher.block_size()];
@@ -34,7 +38,12 @@ impl AESCrypter for DefaultAesCrypter {
         out.truncate(count + rest);
         Ok(out)
     }
-    fn aes_decrypt_bytes(&self, plaintext: &[u8], key: &[u8], iv: Option<&[u8]>) -> Self::ReturnType {
+    fn aes_decrypt_bytes(
+        &self,
+        plaintext: &[u8],
+        key: &[u8],
+        iv: Option<&[u8]>,
+    ) -> Self::ReturnType {
         let mut crypter = Crypter::new(self.cipher, Mode::Decrypt, key, iv)?;
         crypter.pad(true);
         let mut out = vec![0; plaintext.len() + self.cipher.block_size()];

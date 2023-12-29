@@ -24,6 +24,12 @@ impl<'a, T> XORResource<'a, T> {
 
         chrs
     }
+    pub fn get_encrypted_slice(&self) -> &'a [u8] {
+        self.resource
+    }
+    pub fn get_key(&self) -> &'a [u8] {
+        self.key
+    }
 }
 impl<T> PartialEq<Self> for XORResource<'_, T> {
     fn eq(&self, other: &Self) -> bool {
@@ -36,13 +42,28 @@ impl<T> PartialEq<[u8]> for XORResource<'_, T> {
         util::xor_u8_cmp(self.resource, self.key, other)
     }
 }
+impl<T> PartialEq<XORResource<'_, T>> for [u8] {
+    fn eq(&self, other: &XORResource<'_, T>) -> bool {
+        util::xor_u8_cmp(other.resource, other.key, self)
+    }
+}
 impl<T> PartialEq<&[u8]> for XORResource<'_, T> {
     fn eq(&self, other: &&[u8]) -> bool {
         self.eq(*other)
     }
 }
+impl<T> PartialEq<XORResource<'_, T>> for &[u8] {
+    fn eq(&self, other: &XORResource<'_, T>) -> bool {
+        other.eq(self)
+    }
+}
 impl<T> PartialEq<Vec<u8>> for XORResource<'_, T> {
     fn eq(&self, other: &Vec<u8>) -> bool {
         self.eq(&other[..])
+    }
+}
+impl<T> PartialEq<XORResource<'_, T>> for Vec<u8> {
+    fn eq(&self, other: &XORResource<'_, T>) -> bool {
+        other.eq(&self[..])
     }
 }
