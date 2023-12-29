@@ -100,10 +100,10 @@ pub fn include_aes_string_impl(input: TokenStream) -> TokenStream {
             const BYTES: [u8; #len] = [ #(#str , )* ];
             const KEY: [u8; #key_len] = [ #(#key , )* ];
             const IV: Option<&'static [u8]> = Some(&[ #(#iv , )* ]);
-            AESString::new(&BYTES, &KEY, IV)
+            embre::aes::aes_string::AESString::new(&BYTES, &KEY, IV)
         }
     );
-    TokenStream::from(q)
+    q
 }
 
 pub(crate) struct DataArgs {
@@ -205,11 +205,11 @@ pub fn include_aes_bytes_impl(input: TokenStream) -> TokenStream {
             const BYTES: [u8; #len] = [ #(#data , )* ];
             const KEY: [u8; #key_len] = [ #(#key , )* ];
             const IV: Option<&'static [u8]> = Some(&[ #(#iv , )* ]);
-            AESData::new(&BYTES, &KEY, IV)
+            embre::aes::aes_data::AESData::new(&BYTES, &KEY, IV)
         }
     );
 
-    TokenStream::from(q)
+    q
 }
 #[cfg(test)]
 mod tests {
