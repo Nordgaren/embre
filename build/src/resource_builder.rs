@@ -153,7 +153,7 @@ impl ResourceBuilder {
             ));
         });
 
-        fs::write("src/consts.rs", consts.join("\n")).expect("Could not write consts file.");
+        fs::write(format!("{}/consts.rs", self.out_dir), consts.join("\n")).expect("Could not write consts file.");
 
         self
     }

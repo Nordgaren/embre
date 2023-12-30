@@ -5,12 +5,12 @@ mod tests {
     use embre::xor::xor_data::XORData;
     use embre::xor::xor_string::XORString;
     use embre_macro::{
-        include_aes_bytes, include_aes_str, include_xor_bytes, include_xor_str,
+        include_bytes_aes, include_str_aes, include_bytes_xor, include_str_xor,
     };
     use std::fs;
 
-    const XOR_DATA: XORData = include_xor_bytes!("_test/cargo.toml");
-    const XOR_STRING: XORString = include_xor_str!("test string");
+    const XOR_DATA: XORData = include_bytes_xor!("_test/cargo.toml");
+    const XOR_STRING: XORString = include_str_xor!("test string");
 
     #[test]
     fn xor_comparison_operators() {
@@ -67,12 +67,12 @@ mod tests {
     // const AES_DATA: AESData = include_xor_bytes!("_test/cargo.toml");
     #[test]
     fn aes_comparison_operators() {
-        let aes_string = include_aes_str!("test string");
+        let aes_string = include_str_aes!("test string");
         assert!(
             aes_string == "test string",
             "Could not compare AES_STRING and &str 'test string'"
         );
-        let long_aes_string: AESString = include_aes_bytes!("_test/src/lib.rs").into();
+        let long_aes_string: AESString = include_bytes_aes!("_test/src/lib.rs").into();
         assert!(
             long_aes_string == include_str!("lib.rs"),
             "Could not compare AES_STRING and &str from lib.rs"
@@ -80,12 +80,12 @@ mod tests {
     }
     #[test]
     fn aes_comparison_operators_rhs() {
-        let aes_string = include_aes_str!("test string");
+        let aes_string = include_str_aes!("test string");
         assert!(
             "test string" == aes_string,
             "Could not compare AES_STRING and &str 'test string'"
         );
-        let long_aes_string: AESString = include_aes_bytes!("_test/src/lib.rs").into();
+        let long_aes_string: AESString = include_bytes_aes!("_test/src/lib.rs").into();
         assert!(
             include_str!("lib.rs") == long_aes_string,
             "Could not compare AES_STRING and &str from lib.rs"

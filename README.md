@@ -18,7 +18,7 @@ assert!(aes_bytes == include_bytes!("relative/path/file.bin"));
 let xor_string = include_xor_str!("My String");
 let aes_string = include_aes_str!("./string.file");
 assert!(xor_string == "test string");
-assert!(aes_string == include_str!("./string.file");
+assert!(aes_string == include_str!("./string.file"));
 ```
 XOR data/strings can be created as consts/statics. I hope to be able to do the same with AES, soon.
 
@@ -27,6 +27,8 @@ You can embed strings in a PE resource. Currently this just automatically calls 
 I would like to add the ability for the user to build and embed the resource, however they would like, by just passing back 
 a vector.
 ```rust
+// build.rs
+
 use embre_build::resource_builder::ResourceBuilder;
 
 fn main() {
@@ -43,18 +45,23 @@ fn main() {
         .build();
 }
 ```
-You can then use the default PEResource struct, using the feature `DefaultPEResource`. This will load the PE resource via 
-the Windows API. You can also implement your own get_resource for PEs, by implementing the `EmbeddedResource` trait. This 
-trait is still in development.
+You can then include the generated consts file using the `include!` macro, and use the default PEResource struct, using the feature `DefaultPEResource`. This will load the PE resource via 
+the Windows API. You can also implement your own PEResource struct and get_resource implementation for PEs, by implementing the `EmbeddedResource` trait. This 
+trait is still in development, and may change in future updates.
 
 ```rust
-let pe = PEResource::new(RT_RCDATA, RESOURCE_ID);
-let name_xor_string = pe.get_xor_string(NAMED_XOR_POS, NAME_XOR_KEY, NAME_XOR_LEN);
-let xor_string = pe.get_xor_string(MY_XOR_POS, MY_XOR_KEY, MY_XOR_LEN);
-let name_aes_string = pe.get_xor_string(NAMED_AES_POS, NAMED_AES_KEY, NAMED_AES_LEN);
-let aes_string = pe.get_xor_string(MY_AES_POS, MY_AES_KEY, MY_AES_LEN);
+// Include the generated consts file that is in the out dir, which is an environment variable.  
+include!(concat!(env!("OUT_DIR"), "/consts.rs"));
+
+fn main() {
+  let pe = PEResource::new(RT_RCDATA, RESOURCE_ID);
+  let name_xor_string = pe.get_xor_string(NAMED_XOR_POS, NAME_XOR_KEY, NAME_XOR_LEN);
+  let xor_string = pe.get_xor_string(MY_XOR_POS, MY_XOR_KEY, MY_XOR_LEN);
+  let name_aes_string = pe.get_xor_string(NAMED_AES_POS, NAMED_AES_KEY, NAMED_AES_LEN);
+  let aes_string = pe.get_xor_string(MY_AES_POS, MY_AES_KEY, MY_AES_LEN);
+}
 ```
-I am not sure if I want to make a dedicated structure for these, yet, or not.
+I am not sure if I want to make a dedicated structure for these offsets, yet, or not.
 
 ## Sub crates  
 You should only have to import the main crate. The sub crates are for development/organizational purposes, only.  
