@@ -10,16 +10,21 @@ You can include encrypted bytes or strings with the macros that this crate offer
 // You can compare them with other plaintext buffers as if they were plaintext byte slices. 
 let xor_bytes = include_xor_bytes!("P:/ath/to/file.bin");
 let aes_bytes = include_aes_bytes!("relative/path/file.bin");
+assert!(xor_bytes == include_bytes!("P:/ath/to/file.bin"));
+assert!(aes_bytes == include_bytes!("relative/path/file.bin"));
+
 // You can also include xor encrypted strings using the raw string, or a path to the file.
 // These string types can be directly compared
 let xor_string = include_xor_string!("My String");
-let aes_string = include_aes_string!("./file.bin");
+let aes_string = include_aes_string!("./string.file");
+assert!(xor_string == "test string");
+assert!(aes_string == /* contents of './string.file' */);
 ```
 XOR data/strings can be created as consts/statics. I hope to be able to do the same with AES, soon.
 
 ## Build
 You can embed strings in a PE resource. Currently this just automatically calls the `winresource` crate, but in the future 
-I would like to add the ability for the user to build and embed the resource, whoever they would like, by just passing back 
+I would like to add the ability for the user to build and embed the resource, however they would like, by just passing back 
 a vector.
 ```rust
 use embre_build::resource_builder::ResourceBuilder;
@@ -76,6 +81,4 @@ section of a PE.
 arguments the way I want them!  
 
 ## Todo
-> Indexing - Indexing xor types and getting the plaintext value of that byte. Could maybe do something fancy for AES, but, 
-  it might not really be worth it.  
-> Move crypt crate into main crate, and make vendored openssl optional. 
+> Possibly move crypt crate into main crate. Definitely make vendored openssl optional. 
