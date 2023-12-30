@@ -1,7 +1,6 @@
 #![doc = include_str!("../README.md")]
 #[cfg(test)]
 mod tests {
-    use embre::aes::aes_data::AESData;
     use embre::aes::aes_string::AESString;
     use embre::xor::xor_data::XORData;
     use embre::xor::xor_string::XORString;
