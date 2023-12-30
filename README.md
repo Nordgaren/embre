@@ -15,10 +15,10 @@ assert!(aes_bytes == include_bytes!("relative/path/file.bin"));
 
 // You can also include xor encrypted strings using the raw string, or a path to the file.
 // These string types can be directly compared
-let xor_string = include_xor_string!("My String");
-let aes_string = include_aes_string!("./string.file");
+let xor_string = include_xor_str!("My String");
+let aes_string = include_aes_str!("./string.file");
 assert!(xor_string == "test string");
-assert!(aes_string == /* contents of './string.file' */);
+assert!(aes_string == include_str!("./string.file");
 ```
 XOR data/strings can be created as consts/statics. I hope to be able to do the same with AES, soon.
 

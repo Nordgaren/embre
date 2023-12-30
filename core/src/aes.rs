@@ -60,7 +60,7 @@ impl Parse for StringArgs {
     }
 }
 
-pub fn include_aes_string_impl(input: TokenStream) -> TokenStream {
+pub fn include_aes_str_impl(input: TokenStream) -> TokenStream {
     let mut args = parse2::<StringArgs>(input)
         .expect("Could not parse StringArgs. Invalid arguments passed to include_aes_string!.");
     let crypter = DefaultAesCrypter::default();
@@ -213,7 +213,7 @@ pub fn include_aes_bytes_impl(input: TokenStream) -> TokenStream {
 }
 #[cfg(test)]
 mod tests {
-    use crate::aes::include_aes_string_impl;
+    use crate::aes::include_aes_str_impl;
     use quote::quote;
 
     #[test]
@@ -221,7 +221,7 @@ mod tests {
         let key: Vec<u8> = (1..=32).collect();
         let iv: Vec<u8> = (1..=16).collect();
         let q = quote! { "Test String", [ #(#key , )* ], [ #(#iv , )* ] };
-        let result = include_aes_string_impl(q.into()).to_string();
+        let result = include_aes_str_impl(q.into()).to_string();
         assert_eq!(result, "{ const BYTES : [u8 ; 16usize] = [10u8 , 129u8 , 250u8 , 66u8 , 74u8 , 78u8 , 174u8 , 203u8 , 19u8 , 171u8 , 136u8 , 241u8 , 166u8 , 188u8 , 95u8 , 70u8 ,] ; const KEY : [u8 ; 16usize] = [1u8 , 2u8 , 3u8 , 4u8 , 5u8 , 6u8 , 7u8 , 8u8 , 9u8 , 10u8 , 11u8 , 12u8 , 13u8 , 14u8 , 15u8 , 16u8 , 17u8 , 18u8 , 19u8 , 20u8 , 21u8 , 22u8 , 23u8 , 24u8 , 25u8 , 26u8 , 27u8 , 28u8 , 29u8 , 30u8 , 31u8 , 32u8 ,] ; AESString :: new (& BYTES , & KEY) }", "Could not compare AES_STRING and &str");
     }
 }

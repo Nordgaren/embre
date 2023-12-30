@@ -37,7 +37,7 @@ impl Parse for StringArgs {
         }
     }
 }
-pub fn include_xor_string_impl(input: TokenStream) -> TokenStream {
+pub fn include_xor_str_impl(input: TokenStream) -> TokenStream {
     let args = parse_macro_input!(input as StringArgs);
 
     let str = xor_bytes(args.string.as_bytes(), args.key.as_slice());

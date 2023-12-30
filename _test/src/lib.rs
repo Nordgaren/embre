@@ -5,12 +5,12 @@ mod tests {
     use embre::xor::xor_data::XORData;
     use embre::xor::xor_string::XORString;
     use embre_macro::{
-        include_aes_bytes, include_aes_string, include_xor_bytes, include_xor_string,
+        include_aes_bytes, include_aes_str, include_xor_bytes, include_xor_str,
     };
     use std::fs;
 
     const XOR_DATA: XORData = include_xor_bytes!("_test/cargo.toml");
-    const XOR_STRING: XORString = include_xor_string!("test string");
+    const XOR_STRING: XORString = include_xor_str!("test string");
 
     #[test]
     fn xor_comparison_operators() {
@@ -67,7 +67,7 @@ mod tests {
     // const AES_DATA: AESData = include_xor_bytes!("_test/cargo.toml");
     #[test]
     fn aes_comparison_operators() {
-        let aes_string = include_aes_string!("test string");
+        let aes_string = include_aes_str!("test string");
         assert!(
             aes_string == "test string",
             "Could not compare AES_STRING and &str 'test string'"
@@ -80,7 +80,7 @@ mod tests {
     }
     #[test]
     fn aes_comparison_operators_rhs() {
-        let aes_string = include_aes_string!("test string");
+        let aes_string = include_aes_str!("test string");
         assert!(
             "test string" == aes_string,
             "Could not compare AES_STRING and &str 'test string'"
