@@ -12,7 +12,8 @@ widestring = "1.0.2"
 [features]
 default = []
 aes = ["embre-macro/aes", "embre-crypt/aes"]
-openssl-vendored = ["embre-crypt", "embre-crypt/openssl-vendored", "embre-macro/openssl-vendored"]
+openssl-vendored = ["embre-crypt/openssl-vendored", "embre-macro/openssl-vendored"]
+openssl = ["embre-crypt/openssl", "embre-macro/openssl"]
 DefaultPEResource = []
 
 [workspace]
