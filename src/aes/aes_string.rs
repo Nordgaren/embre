@@ -6,6 +6,8 @@ use std::ffi::{CStr, CString, NulError};
 use std::fmt::Display;
 use std::string::FromUtf8Error;
 use widestring::{U16CStr, U16CString};
+use embre_macro::include_str_aes;
+use crate as embre;
 
 pub type AESString<'a> = AESResource<'a, StringResource>;
 impl<'a> AESString<'a> {
@@ -13,14 +15,14 @@ impl<'a> AESString<'a> {
     pub fn to_plaintext_string(&self) -> Result<String, FromUtf8Error> {
         String::from_utf8(
             self.to_plaintext_data()
-                .expect("Could not decrypt aes resource for plaintext string."),
+                .unwrap_or_else(|e| panic!("{} {e}", include_str_aes!("Could not decrypt aes resource for plaintext string."))),
         )
     }
     // This returns the original plaintext version of the string in a new null terminated CString
     pub fn to_plaintext_c_string(&self) -> Result<CString, NulError> {
         CString::new(
             self.to_plaintext_data()
-                .expect("Could not decrypt aes resource for plaintext string."),
+                .unwrap_or_else(|e| panic!("{} {e}", include_str_aes!("Could not decrypt aes resource for plaintext string."))),
         )
     }
 }

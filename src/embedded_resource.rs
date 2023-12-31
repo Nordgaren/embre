@@ -1,10 +1,12 @@
 #![allow(unused)]
 
+use crate as embre;
 use crate::aes::aes_data::AESData;
 use crate::aes::aes_string::AESString;
 use crate::xor::xor_data::XORData;
 use crate::xor::xor_string::XORString;
 use crate::{DataResource, StringResource};
+use embre_macro::include_str_aes;
 
 pub struct PEResource {
     pub category_id: u32,
@@ -46,22 +48,26 @@ pub trait EmbeddedResource {
     fn get_resource(&self) -> Option<&'static [u8]>;
 }
 pub trait EmbeddedXOR: EmbeddedResource {
-    fn get_xor_string(&self, offsets: XOROffsets) -> XORString<'static> {
-        self.get_xor_data(offsets).into()
+    fn get_str(&self, offsets: XOROffsets) -> XORString<'static> {
+        self.get_data(offsets).into()
     }
-    fn get_xor_data(&self, offsets: XOROffsets) -> XORData<'static> {
-        let resource = self.get_resource().expect("Could not find static resource");
+    fn get_data(&self, offsets: XOROffsets) -> XORData<'static> {
+        let resource = self
+            .get_resource()
+            .unwrap_or_else(|| panic!("{}", include_str_aes!("Could not find static resource")));
         let data = &resource[offsets.data..];
         let key = &resource[offsets.key..];
         XORData::new(&data[..offsets.len], &key[..offsets.len])
     }
 }
 pub trait EmbeddedAES: EmbeddedResource {
-    fn get_aes_string(&self, offsets: AESOffsets) -> AESString<'static> {
-        self.get_aes_data(offsets).into()
+    fn get_str(&self, offsets: AESOffsets) -> AESString<'static> {
+        self.get_data(offsets).into()
     }
-    fn get_aes_data(&self, offsets: AESOffsets) -> AESData<'static> {
-        let resource = self.get_resource().expect("Could not find static resource");
+    fn get_data(&self, offsets: AESOffsets) -> AESData<'static> {
+        let resource = self
+            .get_resource()
+            .unwrap_or_else(|| panic!("{}", include_str_aes!("Could not find static resource")));
         let data = &resource[offsets.data..];
         let key = &resource[offsets.key..];
         let iv = offsets.iv.map(|iv_offset| &resource[iv_offset..16]);
@@ -70,10 +76,10 @@ pub trait EmbeddedAES: EmbeddedResource {
 }
 #[allow(non_snake_case)]
 #[cfg(feature = "DefaultPEResource")]
-pub mod default {
+pub mod default_impl {
+    use crate::embedded_resource::EmbeddedAES;
     use crate::embedded_resource::EmbeddedResource;
     use crate::embedded_resource::EmbeddedXOR;
-    use crate::embedded_resource::EmbeddedAES;
     use crate::embedded_resource::PEResource;
 
     impl EmbeddedResource for PEResource {

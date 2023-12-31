@@ -68,15 +68,18 @@ impl AESCrypter for DefaultAesCrypter {
         }
 
         let mut crypter = Crypter::new(self.cipher, Mode::Encrypt, key, iv)
-            .expect("Could not get Crypter from openssl.");
+            // "Could not get Crypter from openssl."
+            .unwrap();
 
         let mut temp = [0; 0x100];
         let mut total = 0;
         for chunk in plaintext.chunks(block_size) {
             let out = &mut temp[..block_size * 2];
-            let written = crypter.update(chunk, out).expect("Could not encrypt chunk");
+            // "Could not encrypt chunk"
+            let written = crypter.update(chunk, out).unwrap();
             if written == 0 {
-                crypter.finalize(out).expect("Could not encrypt chunk");
+                // "Could not encrypt chunk"
+                crypter.finalize(out).unwrap();
             }
             if out[..block_size] != encrypted[total..total + block_size] {
                 return false;
