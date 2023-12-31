@@ -7,6 +7,7 @@ use crate::aes::aes_data::AESData;
 use crate::aes::aes_string::AESString;
 #[cfg(feature = "aes")]
 use embre_macro::include_str_aes;
+use embre_macro::include_str_xor;
 use crate::xor::xor_data::XORData;
 use crate::xor::xor_string::XORString;
 use crate::{DataResource, StringResource};
@@ -59,7 +60,7 @@ pub trait EmbeddedXOR: EmbeddedResource {
     fn get_data(&self, offsets: XOROffsets) -> XORData<'static> {
         let resource = self
             .get_resource()
-            .unwrap_or_else(|| panic!("{}", include_str_aes!("Could not find static resource")));
+            .unwrap_or_else(|| panic!("{}", include_str_xor!("Could not find static resource")));
         let data = &resource[offsets.data..];
         let key = &resource[offsets.key..];
         XORData::new(&data[..offsets.len], &key[..offsets.len])
