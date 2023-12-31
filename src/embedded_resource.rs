@@ -27,11 +27,7 @@ pub struct XOROffsets {
 }
 impl XOROffsets {
     pub const fn new(data: usize, key: usize, len: usize) -> Self {
-        XOROffsets {
-            data,
-            key,
-            len,
-        }
+        XOROffsets { data, key, len }
     }
 }
 pub struct AESOffsets {
@@ -42,19 +38,14 @@ pub struct AESOffsets {
 }
 impl AESOffsets {
     pub const fn new(data: usize, key: usize, iv: Option<usize>, len: usize) -> Self {
-        AESOffsets {
-            data,
-            key,
-            iv,
-            len,
-        }
+        AESOffsets { data, key, iv, len }
     }
 }
 
 pub trait EmbeddedResource {
     fn get_resource(&self) -> Option<&'static [u8]>;
 }
-pub trait XORResource: EmbeddedResource {
+pub trait EmbeddedXOR: EmbeddedResource {
     fn get_xor_string(&self, offsets: XOROffsets) -> XORString<'static> {
         self.get_xor_data(offsets).into()
     }
@@ -65,7 +56,7 @@ pub trait XORResource: EmbeddedResource {
         XORData::new(&data[..offsets.len], &key[..offsets.len])
     }
 }
-pub trait AESResource : EmbeddedResource {
+pub trait EmbeddedAES: EmbeddedResource {
     fn get_aes_string(&self, offsets: AESOffsets) -> AESString<'static> {
         self.get_aes_data(offsets).into()
     }
@@ -81,6 +72,8 @@ pub trait AESResource : EmbeddedResource {
 #[cfg(feature = "DefaultPEResource")]
 pub mod default {
     use crate::embedded_resource::EmbeddedResource;
+    use crate::embedded_resource::EmbeddedXOR;
+    use crate::embedded_resource::EmbeddedAES;
     use crate::embedded_resource::PEResource;
 
     impl EmbeddedResource for PEResource {
@@ -122,6 +115,8 @@ pub mod default {
             }
         }
     }
+
+    impl EmbeddedXOR for PEResource {}
 
     #[link(name = "kernel32", kind = "raw-dylib")]
     #[allow(unused)]

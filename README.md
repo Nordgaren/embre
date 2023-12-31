@@ -2,7 +2,7 @@
 If GIF can be pronounced "JIF", then my jift to the world is that this crate is pronounced "Ember".
 A crate for encrypting, embedding and comparing encrypted resources to non encrypted resources, in Rust.
 
-## Macro
+## Macro Embedding
 You can include encrypted bytes or strings with the macros that this crate offers.
 
 ```rust
@@ -22,7 +22,7 @@ assert!(aes_string == include_str!("./string.file"));
 ```
 XOR data/strings can be created as consts/statics. I hope to be able to do the same with AES, soon.
 
-## Build
+## Build Script Embedding
 You can embed strings in a PE resource. Currently this just automatically calls the `winresource` crate, but in the future 
 I would like to add the ability for the user to build and embed the resource, however they would like, by just passing back 
 a vector.
@@ -45,23 +45,68 @@ fn main() {
         .build();
 }
 ```
-You can then include the generated consts file using the `include!` macro, and use the default PEResource struct, using the feature `DefaultPEResource`. This will load the PE resource via 
-the Windows API. You can also implement your own PEResource struct and get_resource implementation for PEs, by implementing the `EmbeddedResource` trait. This 
-trait is still in development, and may change in future updates.
+You can then include the generated consts file using the `include!` macro, and use the default PEResource struct to get 
+the embedded resources, using the feature `DefaultPEResource`. This will load the PE resource via the Windows API. You 
+can also implement your own PEResource struct and get_resource implementation for PEs, by implementing the `EmbeddedResource` 
+trait. This trait is still in development, and may change in future updates.
 
 ```rust
 // Include the generated consts file that is in the out dir, which is an environment variable.  
 include!(concat!(env!("OUT_DIR"), "/consts.rs"));
 
 fn main() {
-  let pe = PEResource::new(RT_RCDATA, RESOURCE_ID);
-  let name_xor_string = pe.get_xor_string(NAMED_XOR_POS, NAME_XOR_KEY, NAME_XOR_LEN);
-  let xor_string = pe.get_xor_string(MY_XOR_POS, MY_XOR_KEY, MY_XOR_LEN);
-  let name_aes_string = pe.get_xor_string(NAMED_AES_POS, NAMED_AES_KEY, NAMED_AES_LEN);
-  let aes_string = pe.get_xor_string(MY_AES_POS, MY_AES_KEY, MY_AES_LEN);
+  let pe = RESOURCE_INFO;
+  let name_xor_string = pe.get_xor_string(NAMED_XOR);
+  let xor_string = pe.get_xor_string(MY_XOR);
+  let name_aes_string = pe.get_xor_string(NAMED_AES);
+  let aes_string = pe.get_xor_string(MY_AES);
 }
 ```
-I am not sure if I want to make a dedicated structure for these offsets, yet, or not.
+If you don't want to use `DefaultPEResource` feature, you can implement your own and implement 
+`From<embre::embedded_resource::PEResource>`
+```rust
+pub struct PEResource {
+    category_id: u32,
+    resource_id: u32,
+}
+impl PEResource { 
+  // Your implementation
+}
+
+impl From<embre::embedded_resource::PEResource> for PEResource {
+    fn from(value: embre::embedded_resource::PEResource) -> Self {
+        PEResource {
+            category_id: value.category_id,
+            resource_id: value.resource_id,
+        }
+    }
+}
+
+impl EmbeddedResource for PEResource {
+    fn get_resource(&self) -> Option<&'static [u8]> {
+        unsafe {
+            let addr = GetModuleHandleInternal(None);
+            let pe = PE::from_address(addr).ok()?;
+
+            pe.get_pe_resource(self.category_id, self.resource_id)
+        }
+    }
+}
+
+impl EmbeddedXOR for PEResource {}
+
+impl EmbeddedAES for PEResource {}
+
+fn main() {
+  let pe = PEResource::from(RESOURCE_INFO);
+  let name_xor_string = pe.get_xor_string(NAMED_XOR);
+  let xor_string = pe.get_xor_string(MY_XOR);
+  let name_aes_string = pe.get_xor_string(NAMED_AES);
+  let aes_string = pe.get_xor_string(MY_AES);
+}
+```
+
+This just uses the default implementation for EmbeddedXOR and EmbeddedAES, but you can also implement your own.
 
 ## Sub crates  
 You should only have to import the main crate. The sub crates are for development/organizational purposes, only.  

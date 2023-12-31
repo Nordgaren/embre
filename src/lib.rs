@@ -1,8 +1,8 @@
 #![doc = include_str!("../README.md")]
 #![allow(unused)]
 pub use embre_macro::include_bytes_aes;
-pub use embre_macro::include_str_aes;
 pub use embre_macro::include_bytes_xor;
+pub use embre_macro::include_str_aes;
 pub use embre_macro::include_str_xor;
 
 pub mod aes;

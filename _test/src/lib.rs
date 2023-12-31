@@ -4,9 +4,7 @@ mod tests {
     use embre::aes::aes_string::AESString;
     use embre::xor::xor_data::XORData;
     use embre::xor::xor_string::XORString;
-    use embre_macro::{
-        include_bytes_aes, include_str_aes, include_bytes_xor, include_str_xor,
-    };
+    use embre_macro::{include_bytes_aes, include_bytes_xor, include_str_aes, include_str_xor};
     use std::fs;
 
     const XOR_DATA: XORData = include_bytes_xor!("_test/cargo.toml");
