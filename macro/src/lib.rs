@@ -1,4 +1,6 @@
 #![doc = include_str!("../README.md")]
+
+#[cfg(feature = "aes")]
 use embre_core::aes::{include_bytes_aes_impl, include_str_aes_impl};
 use embre_core::xor::{include_bytes_xor_impl, include_str_xor_impl};
 use proc_macro::TokenStream;
@@ -14,11 +16,13 @@ pub fn include_bytes_xor(input: TokenStream) -> TokenStream {
 }
 
 #[proc_macro]
+#[cfg(feature = "aes")]
 pub fn include_str_aes(input: TokenStream) -> TokenStream {
     include_str_aes_impl(input.into()).into()
 }
 
 #[proc_macro]
+#[cfg(feature = "aes")]
 pub fn include_bytes_aes(input: TokenStream) -> TokenStream {
     include_bytes_aes_impl(input.into()).into()
 }

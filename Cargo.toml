@@ -5,11 +5,14 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [dependencies]
-embre-crypt = { path = "crypt" }
+embre-crypt = { path = "crypt", optional = true }
 embre-macro = { path = "macro" }
 widestring = "1.0.2"
 
 [features]
+default = []
+aes = ["embre-macro/aes", "embre-crypt/aes"]
+openssl-vendored = ["embre-crypt", "embre-crypt/openssl-vendored", "embre-macro/openssl-vendored"]
 DefaultPEResource = []
 
 [workspace]

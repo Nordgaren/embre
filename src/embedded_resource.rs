@@ -1,12 +1,15 @@
 #![allow(unused)]
 
 use crate as embre;
+#[cfg(feature = "aes")]
 use crate::aes::aes_data::AESData;
+#[cfg(feature = "aes")]
 use crate::aes::aes_string::AESString;
+#[cfg(feature = "aes")]
+use embre_macro::include_str_aes;
 use crate::xor::xor_data::XORData;
 use crate::xor::xor_string::XORString;
 use crate::{DataResource, StringResource};
-use embre_macro::include_str_aes;
 
 pub struct PEResource {
     pub category_id: u32,
@@ -32,12 +35,14 @@ impl XOROffsets {
         XOROffsets { data, key, len }
     }
 }
+#[cfg(feature = "aes")]
 pub struct AESOffsets {
     pub data: usize,
     pub key: usize,
     pub iv: Option<usize>,
     pub len: usize,
 }
+#[cfg(feature = "aes")]
 impl AESOffsets {
     pub const fn new(data: usize, key: usize, iv: Option<usize>, len: usize) -> Self {
         AESOffsets { data, key, iv, len }
@@ -60,6 +65,7 @@ pub trait EmbeddedXOR: EmbeddedResource {
         XORData::new(&data[..offsets.len], &key[..offsets.len])
     }
 }
+#[cfg(feature = "aes")]
 pub trait EmbeddedAES: EmbeddedResource {
     fn get_str(&self, offsets: AESOffsets) -> AESString<'static> {
         self.get_data(offsets).into()
@@ -123,6 +129,8 @@ pub mod default_impl {
     }
 
     impl EmbeddedXOR for PEResource {}
+    #[cfg(feature = "aes")]
+    impl EmbeddedAES for PEResource {}
 
     #[link(name = "kernel32", kind = "raw-dylib")]
     #[allow(unused)]

@@ -7,7 +7,13 @@ edition = "2021"
 
 [dependencies]
 embre-build = { path = "../build" }
-embre-crypt = { path = "../crypt" }
+embre-crypt = { path = "../crypt", optional = true }
 syn = { version = "1.0", features = ["full", "fold"] }
 quote = "1.0"
 proc-macro2 = "1.0.69"
+
+[features]
+default = []
+aes = ["embre-crypt/aes", "embre-crypt/openssl"]
+openssl = ["embre-crypt/openssl"]
+openssl-vendored = ["embre-crypt/openssl", "embre-crypt/openssl-vendored"]

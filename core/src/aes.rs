@@ -1,5 +1,6 @@
 use crate::literal_bytes::LitBytes;
-use embre_crypt::aes::{AESCrypter, DefaultAesCrypter};
+use embre_crypt::aes::AESCrypter;
+use embre_crypt::aes::openssl::DefaultAesCrypter;
 use proc_macro2::TokenStream;
 use quote::quote;
 use std::fs;
