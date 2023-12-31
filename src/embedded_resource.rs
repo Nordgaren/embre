@@ -6,65 +6,82 @@ use crate::xor::xor_data::XORData;
 use crate::xor::xor_string::XORString;
 use crate::{DataResource, StringResource};
 
-pub trait EmbeddedResource {
-    fn get_resource(&self) -> Option<&'static [u8]>;
-    fn get_xor_string(
-        &self,
-        string_offset: usize,
-        key_offset: usize,
-        len: usize,
-    ) -> XORString<'static> {
-        self.get_xor_data(string_offset, key_offset, len).into()
-    }
-    fn get_xor_data(&self, data_offset: usize, key_offset: usize, len: usize) -> XORData<'static> {
-        let resource = self.get_resource().expect("Could not find static resource");
-        let data = &resource[data_offset..];
-        let key = &resource[key_offset..];
-        XORData::new(&data[..len], &key[..len])
-    }
-    fn get_aes_string(
-        &self,
-        string_offset: usize,
-        key_offset: usize,
-        iv_offset: Option<usize>,
-        len: usize,
-    ) -> AESString<'static> {
-        self.get_aes_data(string_offset, key_offset, iv_offset, len)
-            .into()
-    }
-    fn get_aes_data(
-        &self,
-        data_offset: usize,
-        key_offset: usize,
-        iv_offset: Option<usize>,
-        len: usize,
-    ) -> AESData<'static> {
-        let resource = self.get_resource().expect("Could not find static resource");
-        let data = &resource[data_offset..];
-        let key = &resource[key_offset..];
-        let iv = iv_offset.map(|iv_offset| &resource[iv_offset..16]);
-        AESData::new(&data[..len], &key[..32], iv)
+pub struct PEResource {
+    pub category_id: u32,
+    pub resource_id: u32,
+}
+
+impl PEResource {
+    pub const fn new(category_id: u32, resource_id: u32) -> Self {
+        PEResource {
+            category_id,
+            resource_id,
+        }
     }
 }
 
+pub struct XOROffsets {
+    pub data: usize,
+    pub key: usize,
+    pub len: usize,
+}
+impl XOROffsets {
+    pub const fn new(data: usize, key: usize, len: usize) -> Self {
+        XOROffsets {
+            data,
+            key,
+            len,
+        }
+    }
+}
+pub struct AESOffsets {
+    pub data: usize,
+    pub key: usize,
+    pub iv: Option<usize>,
+    pub len: usize,
+}
+impl AESOffsets {
+    pub const fn new(data: usize, key: usize, iv: Option<usize>, len: usize) -> Self {
+        AESOffsets {
+            data,
+            key,
+            iv,
+            len,
+        }
+    }
+}
+
+pub trait EmbeddedResource {
+    fn get_resource(&self) -> Option<&'static [u8]>;
+}
+pub trait XORResource: EmbeddedResource {
+    fn get_xor_string(&self, offsets: XOROffsets) -> XORString<'static> {
+        self.get_xor_data(offsets).into()
+    }
+    fn get_xor_data(&self, offsets: XOROffsets) -> XORData<'static> {
+        let resource = self.get_resource().expect("Could not find static resource");
+        let data = &resource[offsets.data..];
+        let key = &resource[offsets.key..];
+        XORData::new(&data[..offsets.len], &key[..offsets.len])
+    }
+}
+pub trait AESResource : EmbeddedResource {
+    fn get_aes_string(&self, offsets: AESOffsets) -> AESString<'static> {
+        self.get_aes_data(offsets).into()
+    }
+    fn get_aes_data(&self, offsets: AESOffsets) -> AESData<'static> {
+        let resource = self.get_resource().expect("Could not find static resource");
+        let data = &resource[offsets.data..];
+        let key = &resource[offsets.key..];
+        let iv = offsets.iv.map(|iv_offset| &resource[iv_offset..16]);
+        AESData::new(&data[..offsets.len], &key[..32], iv)
+    }
+}
 #[allow(non_snake_case)]
 #[cfg(feature = "DefaultPEResource")]
 pub mod default {
     use crate::embedded_resource::EmbeddedResource;
-
-    pub struct PEResource {
-        category_id: u32,
-        resource_id: u32,
-    }
-
-    impl PEResource {
-        pub fn new(category_id: u32, resource_id: u32) -> Self {
-            PEResource {
-                category_id,
-                resource_id,
-            }
-        }
-    }
+    use crate::embedded_resource::PEResource;
 
     impl EmbeddedResource for PEResource {
         fn get_resource(&self) -> Option<&'static [u8]> {

@@ -131,29 +131,26 @@ impl ResourceBuilder {
         let mut consts = vec![];
 
         consts.push(format!(
-            "pub const {}: u32 = {:#X};",
-            "RESOURCE_ID", self.config.resource_id
+            "pub const {}: embre::embedded_resource::PEResource = embre::embedded_resource::PEResource::new({:#X}, {:#X});",
+            "RESOURCE_INFO", self.config.category_id, self.config.resource_id
         ));
-
-        consts.push(format!("pub const {}: u32 = {:#X};", "RT_RCDATA", 10));
 
         self.xor_resources.iter().for_each(|string| {
             consts.push(format!(
-                "pub const {}_POS: usize = {:#X};",
-                string.resource_name, string.encrypted_resource.offset
-            ));
-            consts.push(format!(
-                "pub const {}_LEN: usize = {:#X};",
-                string.resource_name,
-                string.encrypted_resource.bytes.len()
-            ));
-            consts.push(format!(
-                "pub const {}_KEY: usize = {:#X};",
-                string.resource_name, string.key.offset
+                "pub const {}: embre::embedded_resource::XOROffsets = embre::embedded_resource::XOROffsets::new({:#X}, {:#X}, {:#X});",
+                string.resource_name, string.encrypted_resource.offset, string.key.offset, string.encrypted_resource.bytes.len()
             ));
         });
 
-        fs::write(format!("{}/consts.rs", self.out_dir), consts.join("\n")).expect("Could not write consts file.");
+        self.aes_resources.iter().for_each(|string| {
+            consts.push(format!(
+                "pub const {}: embre::embedded_resource::XOROffsets = embre::embedded_resource::XOROffsets::new({:#X}, {:#X}, Some({:#X}), {:#X});",
+                string.resource_name, string.encrypted_resource.offset, string.key.offset, string.iv.offset, string.encrypted_resource.bytes.len()
+            ));
+        });
+
+        fs::write(format!("{}/consts.rs", self.out_dir), consts.join("\n"))
+            .expect("Could not write consts file.");
 
         self
     }
