@@ -3,7 +3,6 @@ name = "embre"
 version = "0.1.0"
 edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [dependencies]
 embre-crypt = { path = "crypt", optional = true }
 embre-macro = { path = "macro" }
@@ -14,7 +13,7 @@ default = []
 aes = ["embre-macro/aes", "embre-crypt/aes"]
 openssl = ["embre-crypt/openssl", "embre-macro/openssl"]
 openssl-vendored = ["embre-crypt/openssl-vendored", "embre-macro/openssl-vendored"]
-DefaultPEResource = []
+default-pe-resource = []
 
 [workspace]
 members = [

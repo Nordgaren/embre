@@ -82,7 +82,7 @@ pub trait EmbeddedAES: EmbeddedResource {
     }
 }
 #[allow(non_snake_case)]
-#[cfg(feature = "DefaultPEResource")]
+#[cfg(feature = "default-pe-resource")]
 pub mod default_impl {
     use crate::embedded_resource::EmbeddedAES;
     use crate::embedded_resource::EmbeddedResource;

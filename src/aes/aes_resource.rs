@@ -1,9 +1,8 @@
 use embre_crypt::aes::AESCrypter;
 use std::marker::PhantomData;
 #[cfg(feature = "openssl")]
-type DefaultAesCrypter = embre_crypt::aes::openssl::DefaultAesCrypter;
-#[cfg(not(feature = "openssl"))]
-type DefaultAesCrypter = panic!("No default crypter");
+use embre_crypt::aes::DefaultAesCrypter;
+
 
 #[derive(Debug)]
 pub struct AESResource<'a, T, C: AESCrypter = DefaultAesCrypter> {

@@ -4,7 +4,7 @@ use crate::DataResource;
 use std::fmt::{Debug, Display};
 pub type XORData<'a> = XORResource<'a, DataResource>;
 
-impl XORResource<'_, DataResource> {
+impl XORData<'_> {
     // implement XORData functionality
 }
 impl From<XORString<'static>> for XORData<'static> {

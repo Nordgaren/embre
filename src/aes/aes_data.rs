@@ -7,7 +7,7 @@ use std::fmt::{Debug, Display};
 
 pub type AESData<'a> = AESResource<'a, DataResource>;
 
-impl AESResource<'_, DataResource> {
+impl AESData<'_> {
     // implement XORData functionality
 }
 
