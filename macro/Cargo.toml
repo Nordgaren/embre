@@ -9,7 +9,6 @@ edition = "2021"
 proc-macro = true
 
 [dependencies]
-embre-build = { path = "../build" }
 embre-core = { path = "../core" }
 
 [features]

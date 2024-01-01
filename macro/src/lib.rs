@@ -15,14 +15,14 @@ pub fn include_bytes_xor(input: TokenStream) -> TokenStream {
     include_bytes_xor_impl(input)
 }
 
-#[proc_macro]
 #[cfg(feature = "aes")]
+#[proc_macro]
 pub fn include_str_aes(input: TokenStream) -> TokenStream {
     include_str_aes_impl(input.into()).into()
 }
 
-#[proc_macro]
 #[cfg(feature = "aes")]
+#[proc_macro]
 pub fn include_bytes_aes(input: TokenStream) -> TokenStream {
     include_bytes_aes_impl(input.into()).into()
 }
