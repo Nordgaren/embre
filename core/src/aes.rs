@@ -101,7 +101,7 @@ pub fn include_str_aes_impl(input: TokenStream) -> TokenStream {
             const BYTES: [u8; #len] = [ #(#str , )* ];
             const KEY: [u8; #key_len] = [ #(#key , )* ];
             const IV: Option<&'static [u8]> = Some(&[ #(#iv , )* ]);
-            embre::aes::aes_string::AESString::new(&BYTES, &KEY, IV)
+            AESString::new(&BYTES, &KEY, IV)
         }
     );
     q
@@ -206,7 +206,7 @@ pub fn include_bytes_aes_impl(input: TokenStream) -> TokenStream {
             const BYTES: [u8; #len] = [ #(#data , )* ];
             const KEY: [u8; #key_len] = [ #(#key , )* ];
             const IV: Option<&'static [u8]> = Some(&[ #(#iv , )* ]);
-            embre::aes::aes_data::AESData::new(&BYTES, &KEY, IV)
+            AESData::new(&BYTES, &KEY, IV)
         }
     );
 

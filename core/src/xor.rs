@@ -47,7 +47,7 @@ pub fn include_str_xor_impl(input: TokenStream) -> TokenStream {
         {
             const BYTES: [u8; #len] = [ #(#str , )* ];
             const KEY: [u8; #len] = [ #(#key , )* ];
-            embre::xor::xor_string::XORString::new(&BYTES, &KEY)
+            XORString::new(&BYTES, &KEY)
         }
     );
     TokenStream::from(q)
@@ -99,7 +99,7 @@ pub fn include_bytes_xor_impl(input: TokenStream) -> TokenStream {
         {
             const BYTES: [u8; #len] = [ #(#data , )* ];
             const KEY: [u8; #len] = [ #(#key , )* ];
-            embre::xor::xor_data::XORData::new(&BYTES, &KEY)
+            XORData::new(&BYTES, &KEY)
         }
     );
 
