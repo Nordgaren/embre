@@ -1,29 +1,33 @@
+use crate as embre;
 use crate::aes::aes_data::AESData;
 use crate::aes::aes_resource::AESResource;
 use crate::{util, StringResource};
 use embre_crypt::aes::AESCrypter;
+use embre_macro::include_str_aes;
 use std::ffi::{CStr, CString, NulError};
 use std::fmt::Display;
 use std::string::FromUtf8Error;
 use widestring::{U16CStr, U16CString};
-// use crate::include_str_aes;
-// use crate as embre;
 
 pub type AESString<'a> = AESResource<'a, StringResource>;
 impl<'a> AESString<'a> {
     // This returns the original plaintext version of the string in a new String
     pub fn to_plaintext_string(&self) -> Result<String, FromUtf8Error> {
-        String::from_utf8(
-            self.to_plaintext_data()
-                .unwrap_or_else(|e| panic!("{} {e}", "Could not decrypt aes resource for plaintext string.")),
-        )
+        String::from_utf8(self.to_plaintext_data().unwrap_or_else(|e| {
+            panic!(
+                "{} {e}",
+                include_str_aes!("Could not decrypt aes resource for plaintext string.")
+            )
+        }))
     }
     // This returns the original plaintext version of the string in a new null terminated CString
     pub fn to_plaintext_c_string(&self) -> Result<CString, NulError> {
-        CString::new(
-            self.to_plaintext_data()
-                .unwrap_or_else(|e| panic!("{} {e}", "Could not decrypt aes resource for plaintext string.")),
-        )
+        CString::new(self.to_plaintext_data().unwrap_or_else(|e| {
+            panic!(
+                "{} {e}",
+                include_str_aes!("Could not decrypt aes resource for plaintext string.")
+            )
+        }))
     }
 }
 impl From<AESData<'static>> for AESString<'static> {
@@ -86,12 +90,8 @@ impl PartialEq<AESString<'_>> for CString {
 // EQ for wide strings
 impl PartialEq<[u16]> for AESString<'_> {
     fn eq(&self, other: &[u16]) -> bool {
-        // @TODO I need to make an aes_compare_wstr_to_str that converts the u16s to u8s one block at a time.
-        let len = other.len() * 2;
-        let ptr: *const u8 = other.as_ptr().cast();
-        let other = unsafe { std::slice::from_raw_parts(ptr, len) };
         self.crypter
-            .aes_compare_slice(self.resource, self.key, self.iv, other)
+            .aes_compare_w_str(self.resource, self.key, self.iv, other)
     }
 }
 impl PartialEq<AESString<'_>> for [u16] {

@@ -6,12 +6,14 @@ pub trait AESCrypter {
     fn aes_encrypt_bytes(&self, bytes: &[u8], key: &[u8], iv: Option<&[u8]>) -> Self::ReturnType;
     fn aes_decrypt_bytes(&self, bytes: &[u8], key: &[u8], iv: Option<&[u8]>) -> Self::ReturnType;
     fn aes_compare_slice(&self, bytes: &[u8], key: &[u8], iv: Option<&[u8]>, other: &[u8]) -> bool;
+    fn aes_compare_w_str(&self, bytes: &[u8], key: &[u8], iv: Option<&[u8]>, other: &[u16])
+        -> bool;
 }
 
-
-pub struct DefaultAesCrypter {
-    cipher: Cipher,
-}
+    pub struct DefaultAesCrypter {
+        #[cfg(feature = "openssl")]
+        cipher: Cipher,
+    }
 
 impl Default for DefaultAesCrypter {
     fn default() -> Self {
@@ -113,6 +115,7 @@ impl AESCrypter for DefaultAesCrypter {
 
         true
     }
+
 }
 
 #[cfg(test)]
@@ -165,5 +168,50 @@ mod tests {
             .expect("Could not encrypt test string");
 
         assert!(crypter.aes_compare_slice(&bytes[..], &key[..], Some(&iv[..]), data));
+    }
+
+    #[test]
+    fn aes_string_compare_long() {
+        let data = b"aes_test_string that is longer than a block";
+        let key: Vec<u8> = (1..=32).collect();
+        let iv = (1..=16).collect::<Vec<u8>>();
+        let crypter = DefaultAesCrypter::default();
+        let bytes = crypter
+            .aes_encrypt_bytes(&data[..], &key[..], Some(&iv[..]))
+            .expect("Could not encrypt test string");
+
+        assert!(crypter.aes_compare_slice(&bytes[..], &key[..], Some(&iv[..]), data));
+    }
+
+    #[test]
+    fn aes_w_string_compare() {
+        let data = b"aes_test_string";
+        let key: Vec<u8> = (1..=32).collect();
+        let iv = (1..=16).collect::<Vec<u8>>();
+        let crypter = DefaultAesCrypter::default();
+        let bytes = crypter
+            .aes_encrypt_bytes(&data[..], &key[..], Some(&iv[..]))
+            .expect("Could not decrypt test string");
+
+        let w_string: Vec<u16> = data.iter().map(|b| *b as u16).collect();
+
+        let crypter = DefaultAesCrypter::default();
+        assert!(crypter.aes_compare_w_str(&bytes, &key[..], Some(&iv[..]), &w_string[..]));
+    }
+
+    #[test]
+    fn aes_w_string_compare_long() {
+        let data = b"aes_test_string that is longer than a block";
+        let key: Vec<u8> = (1..=32).collect();
+        let iv = (1..=16).collect::<Vec<u8>>();
+        let crypter = DefaultAesCrypter::default();
+        let bytes = crypter
+            .aes_encrypt_bytes(&data[..], &key[..], Some(&iv[..]))
+            .expect("Could not decrypt test string");
+
+        let w_string: Vec<u16> = data.iter().map(|b| *b as u16).collect();
+
+        let crypter = DefaultAesCrypter::default();
+        assert!(crypter.aes_compare_w_str(&bytes, &key[..], Some(&iv[..]), &w_string[..]));
     }
 }
