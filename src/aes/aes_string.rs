@@ -86,12 +86,8 @@ impl PartialEq<AESString<'_>> for CString {
 // EQ for wide strings
 impl PartialEq<[u16]> for AESString<'_> {
     fn eq(&self, other: &[u16]) -> bool {
-        // @TODO I need to make an aes_compare_wstr_to_str that converts the u16s to u8s one block at a time.
-        let len = other.len() * 2;
-        let ptr: *const u8 = other.as_ptr().cast();
-        let other = unsafe { std::slice::from_raw_parts(ptr, len) };
         self.crypter
-            .aes_compare_slice(self.resource, self.key, self.iv, other)
+            .aes_compare_w_str(self.resource, self.key, self.iv, other)
     }
 }
 impl PartialEq<AESString<'_>> for [u16] {

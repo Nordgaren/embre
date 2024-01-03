@@ -26,6 +26,28 @@ pub fn xor_u8_cmp(buffer: &[u8], key: &[u8], other: &[u8]) -> bool {
 
     true
 }
+fn xor_case_insensitive_str_cmp(buffer: &[u8], key: &[u8], other: &[u8]) -> bool {
+    if buffer.len() != other.len() {
+        return false;
+    }
+
+    for i in 0..other.len() {
+        let b = buffer[i];
+        let mut v = other[i];
+
+        if CASE_RANGE.contains(&v) {
+            v ^= CASE_BIT;
+        }
+
+        v ^= key[i];
+        if v != b && v != b ^ CASE_BIT {
+            return false;
+        };
+
+    }
+
+    true
+}
 #[inline(always)]
 pub fn xor_str_cmp_ignore_case(buffer: &[u8], key: &[u8], other: &[u8]) -> bool {
     if buffer.len() != other.len() {
