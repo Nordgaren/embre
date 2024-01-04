@@ -14,4 +14,4 @@ proc-macro2 = "1.0.69"
 default = []
 aes = ["embre-crypt/aes", "embre-crypt/openssl"]
 openssl = ["embre-crypt/openssl"]
-openssl-vendored = ["embre-crypt/openssl", "embre-crypt/openssl-vendored"]
+openssl-vendored = ["embre-crypt/openssl-vendored"]

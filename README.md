@@ -2,6 +2,10 @@
 If GIF can be pronounced "JIF", then my jift to the world is that this crate is pronounced "Ember".
 A crate for encrypting, embedding and comparing encrypted resources to non encrypted resources, in Rust.
 
+## Known Issue
+For some reason, openssl has to be vendored. If not, the embre crate will not build, because it will be unable to find 
+the "embre-macro" crate, for some reason. I am not sure why. I do want to fix it, asap, though!   
+
 ## Macro Embedding
 You can include encrypted bytes or strings with the macros that this crate offers.
 

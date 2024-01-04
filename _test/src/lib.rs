@@ -1,11 +1,11 @@
 #![doc = include_str!("../README.md")]
 #[cfg(test)]
 mod tests {
-    // use embre::aes::aes_string::AESString;
+    use embre::aes::aes_string::AESString;
     use embre::xor::xor_string::XORString;
     use embre::xor::xor_data::XORData;
-    use embre::{ include_bytes_xor, include_str_xor};
-    //use embre::{ include_bytes_xor, include_str_xor};
+    use embre::aes::aes_data::AESData;
+    use embre::{include_bytes_aes, include_bytes_xor, include_str_aes, include_str_xor};
     use std::fs;
 
     const XOR_DATA: XORData = include_bytes_xor!("_test/cargo.toml");
@@ -62,32 +62,32 @@ mod tests {
         );
     }
 
-    // // Need to find a way to make a const version of AESResource.
-    // // const AES_DATA: AESData = include_xor_bytes!("_test/cargo.toml");
-    // #[test]
-    // fn aes_comparison_operators() {
-    //     let aes_string = include_str_aes!("test string");
-    //     assert!(
-    //         aes_string == "test string",
-    //         "Could not compare AES_STRING and &str 'test string'"
-    //     );
-    //     let long_aes_string: AESString = include_bytes_aes!("_test/src/lib.rs").into();
-    //     assert!(
-    //         long_aes_string == include_str!("lib.rs"),
-    //         "Could not compare AES_STRING and &str from lib.rs"
-    //     );
-    // }
-    // #[test]
-    // fn aes_comparison_operators_rhs() {
-    //     let aes_string = include_str_aes!("test string");
-    //     assert!(
-    //         "test string" == aes_string,
-    //         "Could not compare AES_STRING and &str 'test string'"
-    //     );
-    //     let long_aes_string: AESString = include_bytes_aes!("_test/src/lib.rs").into();
-    //     assert!(
-    //         include_str!("lib.rs") == long_aes_string,
-    //         "Could not compare AES_STRING and &str from lib.rs"
-    //     );
-    // }
+    // Need to find a way to make a const version of AESResource.
+    // const AES_DATA: AESData = include_xor_bytes!("_test/cargo.toml");
+    #[test]
+    fn aes_comparison_operators() {
+        let aes_string = include_str_aes!("test string");
+        assert!(
+            aes_string == "test string",
+            "Could not compare AES_STRING and &str 'test string'"
+        );
+        let long_aes_string: AESString = include_bytes_aes!("_test/src/lib.rs").into();
+        assert!(
+            long_aes_string == include_str!("lib.rs"),
+            "Could not compare AES_STRING and &str from lib.rs"
+        );
+    }
+    #[test]
+    fn aes_comparison_operators_rhs() {
+        let aes_string = include_str_aes!("test string");
+        assert!(
+            "test string" == aes_string,
+            "Could not compare AES_STRING and &str 'test string'"
+        );
+        let long_aes_string: AESString = include_bytes_aes!("_test/src/lib.rs").into();
+        assert!(
+            include_str!("lib.rs") == long_aes_string,
+            "Could not compare AES_STRING and &str from lib.rs"
+        );
+    }
 }

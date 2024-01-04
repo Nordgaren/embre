@@ -4,4 +4,4 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-embre = { path = "..", features = [ "openssl", "aes"] }
+embre = { path = "..", features = [ "openssl-vendored", "aes"] }

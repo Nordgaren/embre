@@ -48,7 +48,6 @@ fn xor_case_insensitive_str_cmp(buffer: &[u8], key: &[u8], other: &[u8]) -> bool
 
     true
 }
-#[inline(always)]
 pub fn xor_str_cmp_ignore_case(buffer: &[u8], key: &[u8], other: &[u8]) -> bool {
     if buffer.len() != other.len() {
         return false;
@@ -85,7 +84,6 @@ pub fn xor_w_str_cmp(buffer: &[u8], key: &[u8], other: &[u16]) -> bool {
 
     true
 }
-#[inline(always)]
 pub fn xor_w_str_cmp_ignore_case(buffer: &[u8], key: &[u8], other: &[u16]) -> bool {
     if buffer.len() != other.len() {
         return false;

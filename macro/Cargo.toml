@@ -13,4 +13,4 @@ embre-core = { path = "../core" }
 default = []
 aes = ["embre-core/aes"]
 openssl = ["embre-core/openssl"]
-openssl-vendored = ["embre-core/openssl", "embre-core/openssl-vendored"]
+openssl-vendored = ["embre-core/openssl-vendored"]

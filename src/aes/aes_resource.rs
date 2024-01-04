@@ -1,6 +1,5 @@
 use embre_crypt::aes::AESCrypter;
 use std::marker::PhantomData;
-#[cfg(feature = "openssl")]
 use embre_crypt::aes::DefaultAesCrypter;
 
 
