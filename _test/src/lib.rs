@@ -12,7 +12,7 @@ mod tests {
     const XOR_STRING: XORString = include_str_xor!("test string");
 
     #[test]
-    fn xor_comparison_operators() {
+    fn xor_comparison_operators_lhs() {
         let xor_string: XORString = XOR_DATA.into();
         // Reading the cargo.toml from this crate. Cargo test will build the exe in the _test directory, but the test will still run in the embre directory.
         let cargo_string = fs::read_to_string("cargo.toml").expect("Could not read cargo.toml");
@@ -20,18 +20,19 @@ mod tests {
 
         assert_eq!(
             xor_string, cargo_string,
-            "Could not compare XORString and String"
+            "Could not compare XORString and String LHS"
         );
         assert_eq!(
             xor_string, cargo_vec,
-            "Could not compare XORString and Vec<u8>"
+            "Could not compare XORString and Vec<u8> LHS"
         );
-
-        assert_eq!(XOR_DATA, cargo_vec, "Could not compare XORData and Vec<u8>");
-
+        assert_eq!(
+            XOR_DATA, cargo_vec,
+            "Could not compare XORData and Vec<u8> LHS"
+        );
         assert_eq!(
             XOR_STRING, "test string",
-            "Could not compare XOR_STRING and &str"
+            "Could not compare XOR_STRING and &str LHS"
         );
     }
 
@@ -50,12 +51,10 @@ mod tests {
             cargo_vec, xor_string,
             "Could not compare XORString and Vec<u8> RHS"
         );
-
         assert_eq!(
             cargo_vec, XOR_DATA,
             "Could not compare XORData and Vec<u8> RHS"
         );
-
         assert_eq!(
             "test string", XOR_STRING,
             "Could not compare XOR_STRING and &str RHS"
@@ -71,6 +70,8 @@ mod tests {
             aes_string == "test string",
             "Could not compare AES_STRING and &str 'test string'"
         );
+        // include_bytes_aes! searches in the working directory, where include_str! searches from the crate directory.
+        // If I can fix this behaviour, I would like to.
         let long_aes_string: AESString = include_bytes_aes!("_test/src/lib.rs").into();
         assert!(
             long_aes_string == include_str!("lib.rs"),
@@ -84,6 +85,8 @@ mod tests {
             "test string" == aes_string,
             "Could not compare AES_STRING and &str 'test string'"
         );
+        // include_bytes_aes! searches in the working directory, where include_str! searches from the crate directory.
+        // If I can fix this behaviour, I would like to.
         let long_aes_string: AESString = include_bytes_aes!("_test/src/lib.rs").into();
         assert!(
             include_str!("lib.rs") == long_aes_string,
