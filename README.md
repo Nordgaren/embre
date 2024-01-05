@@ -39,20 +39,26 @@ fn main() {
     let out_dir = std::env::var("OUT_DIR").unwrap();
     ResourceBuilder::new(out_dir)
         // named strings allow you to determine the name of the constant for your strings
-        .add_named_xor_str("named xor", "My name XOR string") // NAMED_XOR_POS NAMED_XOR_KEY NAMED_XOR_LEN
+        .add_xor_resource(("named xor", "My name XOR string")) // NAMED_XOR_POS NAMED_XOR_KEY NAMED_XOR_LEN
         // no named variants will use the full string as the constant name
-        .add_xor_str("My xor string") // MY_XOR_STRING_POS MY_XOR_STRING_KEY MY_XOR_STRING_LEN
+        .add_xor_resource("My xor string") // MY_XOR_STRING_POS MY_XOR_STRING_KEY MY_XOR_STRING_LEN
         // same goes for aes encrypted strings
-        .add_named_aes_str("named aes", "My named AES string") // NAMED_AES_POS NAMED_AES_KEY NAMED_AES_IV NAMED_AES_LEN
+        .add_aes_resource(AESResource::named_str("named aes", "My named AES string", util::generate_random_bytes(key_len), None)) // NAMED_AES_POS NAMED_AES_KEY NAMED_AES_IV NAMED_AES_LEN
         // spaces are replaced with '_' for all constant names, and all symbols are removed.
-        .add_aes_str("My AES string!") // MY_AES_STRING_POS MY_AES_STRING_KEY MY_AES_STRING_IV MY_AES_STRING_LEN
+        .add_aes_resource("My AES string!") // MY_AES_STRING_POS MY_AES_STRING_KEY MY_AES_STRING_IV MY_AES_STRING_LEN
         .build();
 }
 ```
 You can then include the generated consts file using the `include!` macro, and use the default PEResource struct to get 
 the embedded resources, using the feature `DefaultPEResource`. This will load the PE resource via the Windows API. You 
 can also implement your own PEResource struct and get_resource implementation for PEs, by implementing the `EmbeddedResource` 
-trait. This trait is still in development, and may change in future updates.
+trait. This trait is still in development, and signatures may change in future updates.
+
+Currently the traits to get the resource have the same name, in case your build has any type of symbols. get_str and get_data.
+If you pass in AESOffsets, you get AESData or AESString. If you pass in XOROffsets, you will get the XORData or XORString you
+requested. 
+
+In the future I need to change these traits so that the user can get their custom AESResource or XORResource impls.  
 
 ```rust
 // Include the generated consts file that is in the out dir, which is an environment variable.  
@@ -60,10 +66,11 @@ include!(concat!(env!("OUT_DIR"), "/consts.rs"));
 
 fn main() {
   let pe = RESOURCE_INFO;
-  let name_xor_string = pe.get_xor_string(NAMED_XOR);
-  let xor_string = pe.get_xor_string(MY_XOR);
-  let name_aes_string = pe.get_xor_string(NAMED_AES);
-  let aes_string = pe.get_xor_string(MY_AES);
+  let name_xor_string = pe.get_str(NAMED_XOR);
+  let xor_string = pe.get_str(MY_XOR);
+  // Pass in AES resource info to get AES string
+  let name_aes_string = pe.get_str(NAMED_AES);
+  let aes_string = pe.get_str(MY_AES);
 }
 ```
 If you don't want to use `DefaultPEResource` feature, you can implement your own and implement 

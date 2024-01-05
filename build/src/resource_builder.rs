@@ -20,8 +20,8 @@ use winresource::WindowsResource;
 ///
 /// # Fields
 ///
-/// * `out_dir`: The directory where all generated files are written to.
-/// * `config`: Config type that allows the user to specify the category id, resource id, name, and pad range of the
+/// * `out_dir`: String - The directory where all generated files are written to.
+/// * `config`: BuildConfig - Config type that allows the user to specify the category id, resource id, name, and pad range of the
 /// resource builder.
 ///
 /// # Examples
@@ -48,6 +48,11 @@ impl Default for ResourceBuilder {
     /// BuildConfig settings. You can supply a build config after, with the builder methods.
     ///
     /// returns: ResourceBuilder
+    ///
+    /// # Default Values
+    ///
+    /// * `out_dir`: env::var("OUT_DIR")
+    /// * `config`: Default::default()
     ///
     /// # Examples
     ///
@@ -118,7 +123,7 @@ impl ResourceBuilder {
     ///
     /// # Arguments
     ///
-    /// * `resource`: Anything that implements Into<XORResource>. This can be an XORResource, itself, or a String, &str,
+    /// * `resource`: impl Into\<XORResource\> - Anything that implements Into<XORResource>. This can be an XORResource, itself, or a String, &str,
     /// a tuple of (&str, &str) or tuple of (&str, &[u8]).
     ///
     /// returns: ResourceBuilder
@@ -164,7 +169,7 @@ impl ResourceBuilder {
     ///
     /// # Arguments
     ///
-    /// * `resource`: Anything that implements Into<AESResource>. This can be an AESResource, itself, or a String, &str,
+    /// * `resource`: impl Into\<AESResource\> - Anything that implements Into<AESResource>. This can be an AESResource, itself, or a String, &str,
     /// a tuple of (&str, &str) or tuple of (&str, &[u8]).
     ///
     /// returns: ResourceBuilder
