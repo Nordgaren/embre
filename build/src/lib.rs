@@ -7,7 +7,7 @@ mod tests;
 pub mod util;
 
 #[macro_export]
-macro_rules! p {
+macro_rules! build_println {
     ($($tokens: tt)*) => {
         println!("cargo:warning={}", format!($($tokens)*))
     }
