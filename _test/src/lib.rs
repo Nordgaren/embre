@@ -1,10 +1,10 @@
 #![doc = include_str!("../README.md")]
 #[cfg(test)]
 mod tests {
-    use embre::aes::aes_string::AESString;
-    use embre::xor::xor_string::XORString;
-    use embre::xor::xor_data::XORData;
     use embre::aes::aes_data::AESData;
+    use embre::aes::aes_string::AESString;
+    use embre::xor::xor_data::XORData;
+    use embre::xor::xor_string::XORString;
     use embre::{include_bytes_aes, include_bytes_xor, include_str_aes, include_str_xor};
     use std::fs;
 

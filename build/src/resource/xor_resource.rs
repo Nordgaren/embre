@@ -1,11 +1,13 @@
 #![allow(unused)]
-use crate::resource::{GetResourceName, Resource};
-use crate::util::{make_const_name, xor_bytes};
 
-pub(crate) struct XORResource {
-    pub resource_name: String,
-    pub encrypted_resource: Resource,
-    pub key: Resource,
+use std::str::FromStr;
+use crate::resource::{GetResourceName, Resource};
+use crate::util::{generate_random_bytes, make_const_name, xor_bytes};
+
+pub struct XORResource {
+    pub(crate) resource_name: String,
+    pub(crate) encrypted_resource: Resource,
+    pub(crate) key: Resource,
 }
 
 impl XORResource {
@@ -19,10 +21,29 @@ impl XORResource {
             key: Resource::new(key_bytes),
         }
     }
-    pub fn from_str(string: &str, key_bytes: Vec<u8>) -> XORResource {
-        XORResource::new(string, string.as_bytes(), key_bytes)
+    pub fn named(resource_name: &str, plaintext_bytes: &[u8]) -> XORResource {
+        XORResource::new(
+            resource_name,
+            plaintext_bytes,
+            generate_random_bytes(plaintext_bytes.len()),
+        )
+    }
+    pub fn named_str(resource_name: &str, string: &str) -> XORResource {
+        XORResource::new(
+            resource_name,
+            string.as_bytes(),
+            generate_random_bytes(string.len()),
+        )
+    }
+    pub fn from_str(string: &str) -> XORResource {
+        XORResource::new(
+            string,
+            string.as_bytes(),
+            generate_random_bytes(string.len()),
+        )
     }
 }
+
 
 impl GetResourceName for XORResource {
     fn get_resource_name(&self) -> &String {

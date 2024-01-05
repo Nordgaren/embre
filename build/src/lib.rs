@@ -1,6 +1,6 @@
 #![doc = include_str!("../README.md")]
 pub mod config;
-mod resource;
+pub mod resource;
 pub mod resource_builder;
 #[cfg(test)]
 mod tests;

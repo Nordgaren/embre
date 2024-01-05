@@ -1,7 +1,6 @@
 use embre_crypt::aes::AESCrypter;
-use std::marker::PhantomData;
 use embre_crypt::aes::DefaultAesCrypter;
-
+use std::marker::PhantomData;
 
 #[derive(Debug)]
 pub struct AESResource<'a, T, C: AESCrypter = DefaultAesCrypter> {

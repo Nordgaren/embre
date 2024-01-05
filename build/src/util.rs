@@ -327,5 +327,5 @@ pub(crate) fn make_const_name(string: &str) -> String {
         const_name = const_name.replace(*pattern, "")
     }
 
-    const_name
+    const_name.replace("__", "_")
 }

@@ -5,12 +5,12 @@ use crate as embre;
 use crate::aes::aes_data::AESData;
 #[cfg(feature = "aes")]
 use crate::aes::aes_string::AESString;
-#[cfg(feature = "aes")]
-use embre_macro::include_str_aes;
-use embre_macro::include_str_xor;
 use crate::xor::xor_data::XORData;
 use crate::xor::xor_string::XORString;
 use crate::{DataResource, StringResource};
+#[cfg(feature = "aes")]
+use embre_macro::include_str_aes;
+use embre_macro::include_str_xor;
 
 pub struct PEResource {
     pub category_id: u32,

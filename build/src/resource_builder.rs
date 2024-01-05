@@ -9,7 +9,31 @@ use rand::seq::SliceRandom;
 use rand::Rng;
 use std::{env, fs};
 use winresource::WindowsResource;
-
+/// A Resource builder for building a binary blob for embedding into a PE (or soon, an ELF). This builder also provides
+/// offsets to the data in the binary blob, and can also do the embedding process into a PE resource, for you.  Resources
+/// are inserted randomly into the binary blob on build, with random padding between each resource, determined by the config.
+///
+/// The ResourceBuilder also writes a consts.rs file with constants that can be used with the EmbeddedResource trait to
+/// retrieve the users data.
+///
+/// All resource names must be unique, and are checked during `.build()`.
+///
+/// # Fields
+///
+/// * `out_dir`: The directory where all generated files are written to.
+/// * `config`: Config type that allows the user to specify the category id, resource id, name, and pad range of the
+/// resource builder.
+///
+/// # Examples
+///
+/// ```rust
+/// # use embre_build::config::BuildConfig;
+/// # use embre_build::resource_builder::ResourceBuilder;
+/// let config = BuildConfig::new(10, 100, "my_resource.bin".to_string(), 0..=0x100);
+/// ResourceBuilder::new("P:/ath/to/out_dir".to_string(), config)
+///         .add_xor_resource("My String")
+///         .build()
+/// ```
 pub struct ResourceBuilder {
     out_dir: String,
     config: BuildConfig,
@@ -19,71 +43,152 @@ pub struct ResourceBuilder {
     pub(super) xor_resources: Vec<XORResource>,
 }
 
+impl Default for ResourceBuilder {
+    /// Returns a new Resource builder with the 'OUT_DIR' environment variable value as the out directory and the default
+    /// BuildConfig settings. You can supply a build config after, with the builder methods.
+    ///
+    /// returns: ResourceBuilder
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// # use embre_build::config::BuildConfig;
+    /// # use embre_build::resource_builder::ResourceBuilder;
+    /// let config = BuildConfig::new(10, 100, "my_resource.bin".to_string(), 0..=0x100);
+    /// ResourceBuilder::default()
+    ///         .add_xor_resource("My String")
+    ///         .with_config(config)
+    ///         .build()
+    /// ```
+    fn default() -> Self {
+        ResourceBuilder::new(
+            env::var("OUT_DIR").expect("Could not get environment variable OUT_DIR"),
+            Default::default(),
+        )
+    }
+}
+
 impl ResourceBuilder {
-    pub fn new(out_dir: String) -> Self {
+    /// Returns a new Resource builder with the out_dir and config provided. `ResourceBuilder::default()` is almost always
+    /// better, but this function is provided in-case the user decides to use a different out directory.
+    pub fn new(out_dir: String, config: BuildConfig) -> Self {
         ResourceBuilder {
             out_dir,
-            config: Default::default(),
+            config,
             resource_bytes: vec![],
             plaintext_resources: vec![],
             aes_resources: vec![],
             xor_resources: vec![],
         }
     }
-    pub fn add_config(mut self, config: BuildConfig) -> Self {
+    /// Changed the config of the current resource builder to the supplied config.
+    ///
+    /// returns: ResourceBuilder
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// # use embre_build::config::BuildConfig;
+    /// # use embre_build::resource_builder::ResourceBuilder;
+    /// let config = BuildConfig::new(10, 100, "my_resource.bin".to_string(), 0..=0x100);
+    /// ResourceBuilder::default()
+    ///         .with_config(config);
+    /// ```
+    pub fn with_config(mut self, config: BuildConfig) -> Self {
         self.config = config;
         self
     }
+    /// Add multiple Strings at a time to be xor encrypted. All strings will be auto-named for lookup constants.
     pub fn add_xor_strings(self, strings: &[String]) -> Self {
         let strs: Vec<&str> = strings.iter().map(|s| s.as_str()).collect();
         self.add_xor_strs(strs.as_slice())
     }
+    /// Add multiple &strs at a time to be xor encrypted. All strings will be auto-named for lookup constants.
     pub fn add_xor_strs(mut self, strs: &[&str]) -> Self {
-        self.xor_resources.extend(strs.iter().map(|string_name| {
-            XORResource::from_str(string_name, generate_random_bytes(string_name.len()))
-        }));
-
+        self.xor_resources.extend(
+            strs.iter()
+                .map(|string_name| XORResource::from_str(string_name)),
+        );
         self
     }
-    pub fn add_xor_str(mut self, string: &str) -> Self {
-        self.xor_resources.push(XORResource::from_str(
-            string,
-            generate_random_bytes(string.len()),
-        ));
+    /// Adds a resource to the resource builder for embedding in an executable within a binary blob as xor encrypted data.
+    /// Strings will be named after themselves, with the util::make_const_name function, which will remove illegal characters
+    /// and turn letters uppercase. You can provide a name, to not leave the naming up to the algorithm, as well as provide
+    /// a stable const name for lookup in the resulting embedded blob.
+    ///
+    /// # Arguments
+    ///
+    /// * `resource`: Anything that implements Into<XORResource>. This can be an XORResource, itself, or a String, &str,
+    /// a tuple of (&str, &str) or tuple of (&str, &[u8]).
+    ///
+    /// returns: ResourceBuilder
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// # use embre_build::resource::xor_resource::XORResource;
+    /// # use embre_build::resource_builder::ResourceBuilder;
+    /// # use embre_build::util;
+    ///
+    /// # let some_var = 64;
+    /// ResourceBuilder::default()
+    ///         .add_xor_resource("My String")
+    ///         .add_xor_resource(("string 2", "MyString2"))
+    ///         .add_xor_resource(("bytes", &[10, 11, 12, 13, 14, 15]))
+    ///         .add_xor_resource(format!("Some formatted string {}", some_var))
+    ///         .add_xor_resource(XORResource::new("resource name", "resource string".as_bytes(), util::generate_random_bytes("resource string".len())))
+    ///         .build();
+    /// ```
+    pub fn add_xor_resource(mut self, resource: impl Into<XORResource>) -> Self {
+        self.xor_resources.push(resource.into());
         self
     }
-    pub fn add_named_xor_str(mut self, resource_name: &str, string: &str) -> Self {
-        self.xor_resources.push(XORResource::new(
-            resource_name,
-            string.as_bytes(),
-            generate_random_bytes(string.len()),
-        ));
-        self
-    }
-    pub fn add_aes_str(mut self, string: &str) -> Self {
-        self.aes_resources
-            .push(AESResource::from_str(string, None, None));
-        self
-    }
-    pub fn add_named_aes_str(mut self, resource_name: &str, string: &str) -> Self {
-        self.aes_resources.push(AESResource::new(
-            resource_name,
-            string.as_bytes(),
-            None,
-            None,
-        ));
-        self
-    }
+    /// Add multiple Strings at a time to be aes encrypted. All strings will be auto-named for lookup constants.
     pub fn add_aes_strings(self, strings: &[String]) -> Self {
         let strs: Vec<&str> = strings.iter().map(|s| s.as_str()).collect();
         self.add_xor_strs(strs.as_slice())
     }
+    /// Add multiple &strs at a time to be aes encrypted. All strings will be auto-named for lookup constants.
     pub fn add_aes_strs(mut self, strs: &[&str]) -> Self {
         self.aes_resources.extend(
             strs.iter()
                 .map(|string_name| AESResource::from_str(string_name, None, None)),
         );
 
+        self
+    }
+    /// Adds a resource to the resource builder for embedding in an executable within a binary blob as aes encrypted data.
+    /// Strings will be named after themselves, with the util::make_const_name function, which will remove illegal characters
+    /// and turn letters uppercase. You can provide a name, to not leave the naming up to the algorithm, as well as provide
+    /// a stable const name for lookup in the resulting embedded blob.
+    ///
+    /// # Arguments
+    ///
+    /// * `resource`: Anything that implements Into<AESResource>. This can be an AESResource, itself, or a String, &str,
+    /// a tuple of (&str, &str) or tuple of (&str, &[u8]).
+    ///
+    /// returns: ResourceBuilder
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// # use embre_build::resource::aes_resource::AESResource;
+    /// # use embre_build::resource_builder::ResourceBuilder;
+    /// # use embre_build::util;
+    ///
+    /// # let some_var = 64;
+    /// # let key_len = 32;
+    /// ResourceBuilder::default()
+    ///         .add_aes_resource("My String")
+    ///         .add_aes_resource(("string 2", "MyString2"))
+    ///         .add_aes_resource(("bytes", &[10, 11, 12, 13, 14, 15]))
+    ///         .add_aes_resource(format!("Some formatted string {}", some_var))
+    ///         .add_aes_resource(AESResource::new("resource name", "resource string".as_bytes(), Some(util::generate_random_bytes(key_len)), None))
+    ///         .build();
+    /// ```
+    pub fn add_aes_str(mut self, resource: impl Into<AESResource>) -> Self {
+        self.aes_resources
+            .push(resource.into());
         self
     }
     pub fn build_resource_binary(mut self) -> Self {
@@ -210,5 +315,46 @@ impl ResourceBuilder {
         if names.len() != orig_len {
             panic!("Duplicate names detected")
         }
+    }
+}
+
+impl From<String> for XORResource {
+    fn from(string: String) -> Self {
+        XORResource::from(&string[..])
+    }
+}
+impl From<&str> for XORResource {
+    fn from(string: &str) -> Self {
+        XORResource::from_str(string)
+    }
+}
+impl From<(&str, &str)> for XORResource {
+    fn from((name, string): (&str, &str)) -> Self {
+        XORResource::named_str(name, string)
+    }
+}
+impl From<(&str, &[u8])> for XORResource {
+    fn from((name, data): (&str, &[u8])) -> Self {
+        XORResource::named(name, data)
+    }
+}
+impl From<String> for AESResource {
+    fn from(string: String) -> Self {
+        AESResource::from(&string[..])
+    }
+}
+impl From<&str> for AESResource {
+    fn from(string: &str) -> Self {
+        AESResource::from_str(string, None, None)
+    }
+}
+impl From<(&str, &str)> for AESResource {
+    fn from((name, string): (&str, &str)) -> Self {
+        AESResource::named_str(name, string)
+    }
+}
+impl From<(&str, &[u8])> for AESResource {
+    fn from((name, data): (&str, &[u8])) -> Self {
+        AESResource::named(name, data)
     }
 }

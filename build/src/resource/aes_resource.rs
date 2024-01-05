@@ -3,7 +3,7 @@ use crate::resource::xor_resource::XORResource;
 use crate::resource::{GetResourceName, Resource};
 use crate::util::{aes_encrypt_bytes, generate_random_bytes, make_const_name, xor_bytes};
 
-pub(crate) struct AESResource {
+pub struct AESResource {
     pub resource_name: String,
     pub encrypted_resource: Resource,
     pub key: Resource,
@@ -38,6 +38,12 @@ impl AESResource {
             key,
             iv,
         }
+    }
+    pub fn named_str(string_name: &str, string: &str) -> AESResource {
+        Self::new(string_name, string.as_bytes(), None, None)
+    }
+    pub fn named(string_name: &str, resource: &[u8]) -> AESResource {
+        Self::new(string_name, resource, None, None)
     }
     pub fn from_str(string_name: &str, key: Option<Vec<u8>>, iv: Option<Vec<u8>>) -> AESResource {
         Self::new(string_name, string_name.as_bytes(), key, iv)

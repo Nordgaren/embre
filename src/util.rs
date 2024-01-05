@@ -43,7 +43,6 @@ fn xor_case_insensitive_str_cmp(buffer: &[u8], key: &[u8], other: &[u8]) -> bool
         if v != b && v != b ^ CASE_BIT {
             return false;
         };
-
     }
 
     true

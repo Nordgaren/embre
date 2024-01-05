@@ -110,7 +110,7 @@ fn main() {
 }
 ```
 
-This just uses the default implementation for EmbeddedXOR and EmbeddedAES, but you can also implement your own.
+This just uses the default implementation for EmbeddedXOR and EmbeddedAES, but you can also implement your own, as well.
 
 ## Sub crates  
 You should only have to import the main crate. The sub crates are for development/organizational purposes, only.  

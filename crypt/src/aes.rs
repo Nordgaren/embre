@@ -6,7 +6,7 @@ pub trait AESCrypter {
     fn aes_decrypt_bytes(&self, bytes: &[u8], key: &[u8], iv: Option<&[u8]>) -> Self::ReturnType;
     fn aes_compare_slice(&self, bytes: &[u8], key: &[u8], iv: Option<&[u8]>, other: &[u8]) -> bool;
     fn aes_compare_w_str(&self, bytes: &[u8], key: &[u8], iv: Option<&[u8]>, other: &[u16])
-                         -> bool;
+        -> bool;
 }
 
 pub struct DefaultAesCrypter {
@@ -100,8 +100,7 @@ impl AESCrypter for DefaultAesCrypter {
             return false;
         }
 
-        let mut crypter = Crypter::new(self.cipher, Mode::Encrypt, key, iv)
-            .unwrap(); // .expect("Could not get Crypter from openssl.")
+        let mut crypter = Crypter::new(self.cipher, Mode::Encrypt, key, iv).unwrap(); // .expect("Could not get Crypter from openssl.")
 
         let mut temp = [0; TEMP_BUFFER_SIZE];
         let mut total = 0;
