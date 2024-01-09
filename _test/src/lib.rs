@@ -1,8 +1,8 @@
 #![doc = include_str!("../README.md")]
 
-mod crypt;
 mod build;
 mod consts;
+mod crypt;
 
 #[cfg(test)]
 mod tests {

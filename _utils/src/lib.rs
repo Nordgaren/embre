@@ -12,9 +12,9 @@ pub fn generate_random_bytes(num_bytes: usize) -> Vec<u8> {
 }
 
 pub fn generate_random_bytes_in_range<R>(num_bytes: usize, value_range: R) -> Vec<u8>
-    where
-        R: SampleRange<u8>,
-        R: Clone,
+where
+    R: SampleRange<u8>,
+    R: Clone,
 {
     (0..num_bytes)
         .map(|_| rand::thread_rng().gen_range(value_range.clone()))

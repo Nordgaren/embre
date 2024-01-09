@@ -1,6 +1,6 @@
 #![allow(unused)]
-use crate::resource::{GetResourceName, Resource};
 use crate::make_const_name;
+use crate::resource::{GetResourceName, Resource};
 
 pub struct PlaintextResource {
     pub resource_name: String,

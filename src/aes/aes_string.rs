@@ -2,7 +2,7 @@ use crate as embre;
 use crate::aes::aes_data::AESData;
 use crate::aes::aes_resource::AESResource;
 use crate::{common_string_fmt, StringResource};
-use embre_crypt::aes::AESCrypter;
+use embre_crypt::aes::{AESCrypter, AESStrCompare};
 use embre_macro::include_str_aes;
 use std::ffi::{CStr, CString, NulError};
 use std::fmt::Display;

@@ -1,13 +1,78 @@
 use openssl::symm::{Cipher, Crypter, Mode};
 
-pub trait AESCrypter {
+/// `AESCrypter` trait allows the implementer to specify the input and return type. The implementation of this for
+/// `DefaultAESCrypter` has an InType of `&[u8]` and a ReturnType of`Result<Vec<u8>>`.   
+///
+/// You could implement an `AESCrypter` that takes in a `&mut [u8]`, and passes back a bool on whether or the function
+/// succeeded in encrypting the data.
+pub trait AESCrypter<'a> {
+    /// The input type for the encrypted or decrypted data, for the encrypt and decrypt functions.  
+    /// `DefaultAESCrypter` accepts a `&[u8]`.  
+    type InType;
+    /// The return type for the encrypt and decrypt functions.  
+    /// `DefaultAESCrypter` returns a `Result<Vec<u8>>`.  
     type ReturnType;
-    fn aes_encrypt_bytes(&self, encrypted: &[u8], key: &[u8], iv: Option<&[u8]>) -> Self::ReturnType;
-    fn aes_decrypt_bytes(&self, plaintext: &[u8], key: &[u8], iv: Option<&[u8]>) -> Self::ReturnType;
-    fn aes_compare_slice(&self, encrypted: &[u8], key: &[u8], iv: Option<&[u8]>, plaintext: &[u8]) -> bool;
-    /// Compares a wide string with the encrypted data. The implementation of this on the DefaultAESCrypter assumes the
-    /// encrypted string is UTF-8, so it writes the utf-8 version of each character of the 'other' string to the buffer
-    /// for the encryption and comparison.
+    /// Encrypts the data passed to the function. The implementation of this for `DefaultAESCrypter` accepts a `&[u8]`
+    /// and passes back a `Result<Vec<u8>>` with the new encrypted data, and leaves the input untouched.
+    ///
+    /// # Arguments
+    ///
+    /// * `plaintext`: `Self::InType` - The data to be encrypted.  
+    /// * `key`: `&[u8]` - AES Key for encrypted bytes.
+    /// * `iv`: `Option<&[u8]>` - Optional IV for encrypted bytes.
+    ///
+    /// returns: Self::ReturnType
+    fn aes_encrypt_bytes(
+        &self,
+        plaintext: Self::InType,
+        key: &[u8],
+        iv: Option<&[u8]>,
+    ) -> Self::ReturnType;
+    /// Decrypts the data passed to the function. The implementation of this for `DefaultAESCrypter` accepts a `&[u8]`
+    /// and passes back a Result<Vec<u8>> with the new decrypted data, and leaves the input untouched.   
+    ///
+    /// # Arguments
+    ///
+    /// * `encrypted`: `&[u8]` - The data to be decrypted.  
+    /// * `key`: `&[u8]` - AES Key for encrypted bytes.
+    /// * `iv`: `Option<&[u8]>` - Optional IV for encrypted bytes.
+    ///
+    /// returns: Self::ReturnType
+    fn aes_decrypt_bytes(
+        &self,
+        encrypted: Self::InType,
+        key: &[u8],
+        iv: Option<&[u8]>,
+    ) -> Self::ReturnType;
+}
+
+/// Separate trait for string compare functions. The implementation for `DefaultAESCrypter` checks if the result would be
+/// the same length, first. Then it uses a local buffer, chunks the string into slices the same size as the block size,
+/// and encrypts the slices into the local buffer and compares the part of the encrypted chunk to the newly encrypted chunk
+/// of data, until it gets through the whole string. It does the same for the wide string implementation, except it uses
+/// an additional buffer to write out the UTF-8 version of the wide string character to an additional buffer for comparison.
+pub trait AESStrCompare {
+    /// Compares a string with the encrypted data. The implementation of this on the `DefaultAESCrypter` assumes the
+    /// encrypted and plaintext string is UTF-8.
+    ///
+    /// # Arguments
+    ///
+    /// * `encrypted`: `&[u8]` - Encrypted bytes.
+    /// * `key`: `&[u8]` - AES Key for encrypted bytes.
+    /// * `iv`: `Option<&[u8]>` - Optional IV for encrypted bytes.
+    /// * `plaintext`: `&[u8]` - The plaintext UTF-8 string we are comparing against.
+    ///
+    /// returns: bool
+    fn aes_compare_slice(
+        &self,
+        encrypted: &[u8],
+        key: &[u8],
+        iv: Option<&[u8]>,
+        plaintext: &[u8],
+    ) -> bool;
+    /// Compares a wide string with the encrypted data. The implementation of this on the `DefaultAESCrypter` assumes the
+    /// encrypted string is UTF-8, so it writes the ASCII version of each character of the 'plaintext' wide string to an
+    /// additional buffer for the encryption and comparison.
     ///
     /// # Arguments
     ///
@@ -17,8 +82,13 @@ pub trait AESCrypter {
     /// * `plaintext`: `&[u16]` - The plaintext wide string we are comparing against.
     ///
     /// returns: bool
-    fn aes_compare_w_str(&self, encrypted: &[u8], key: &[u8], iv: Option<&[u8]>, plaintext: &[u16])
-        -> bool;
+    fn aes_compare_w_str(
+        &self,
+        encrypted: &[u8],
+        key: &[u8],
+        iv: Option<&[u8]>,
+        plaintext: &[u16],
+    ) -> bool;
 }
 
 pub struct DefaultAesCrypter {
@@ -47,31 +117,70 @@ impl DefaultAesCrypter {
 }
 
 #[cfg(not(feature = "openssl"))]
-impl AESCrypter for DefaultAesCrypter {
+impl<'a> AESCrypter<'a> for DefaultAesCrypter {
+    type InType = ();
     type ReturnType = ();
 
-    fn aes_encrypt_bytes(&self, bytes: &[u8], key: &[u8], iv: Option<&[u8]>) -> Self::ReturnType {
+    fn aes_encrypt_bytes(
+        &self,
+        plaintext: Self::InType,
+        key: &[u8],
+        iv: Option<&[u8]>,
+    ) -> Self::ReturnType {
         unimplemented!("AESCrypter for DefaultAesCrypter")
     }
-
-    fn aes_decrypt_bytes(&self, bytes: &[u8], key: &[u8], iv: Option<&[u8]>) -> Self::ReturnType {
+    fn aes_decrypt_bytes(
+        &self,
+        encrypted: Self::InType,
+        key: &[u8],
+        iv: Option<&[u8]>,
+    ) -> Self::ReturnType {
         unimplemented!("AESCrypter for DefaultAesCrypter")
     }
+}
 
-    fn aes_compare_slice(&self, bytes: &[u8], key: &[u8], iv: Option<&[u8]>, other: &[u8]) -> bool {
+#[cfg(not(feature = "openssl"))]
+impl AESStrCompare for DefaultAesCrypter {
+    fn aes_compare_slice(
+        &self,
+        encrypted: &[u8],
+        key: &[u8],
+        iv: Option<&[u8]>,
+        plaintext: &[u8],
+    ) -> bool {
+        unimplemented!("AESCrypter for DefaultAesCrypter")
+    }
+    fn aes_compare_w_str(
+        &self,
+        encrypted: &[u8],
+        key: &[u8],
+        iv: Option<&[u8]>,
+        plaintext: &[u16],
+    ) -> bool {
         unimplemented!("AESCrypter for DefaultAesCrypter")
     }
 }
 
 #[cfg(feature = "openssl")]
-const TEMP_BUFFER_SIZE: usize = 0x100;
-
-#[cfg(feature = "openssl")]
-impl AESCrypter for DefaultAesCrypter {
+impl<'a> AESCrypter<'a> for DefaultAesCrypter {
+    type InType = &'a [u8];
+    // Yea, shut up. :P
     type ReturnType = std::io::Result<Vec<u8>>;
+    /// Encrypts the data passed to the function. The default implementation of this for `DefaultAESCrypter` accepts a `&[u8]`
+    /// and passes back a `Result<Vec<u8>>` with the new encrypted data, and leaves the input untouched. You could implement
+    /// an `AESCrypter` that takes in a `&mut [u8]`, and passes back a bool on whether or the function succeeded in encrypting
+    /// the data. It is setup this way so that the user has more control over what their implementation of the trait is.  
+    ///
+    /// # Arguments
+    ///
+    /// * `plaintext`: `&[u8]` - The data to be encrypted.  
+    /// * `key`: `&[u8]` - AES Key for encrypted bytes.
+    /// * `iv`: `Option<&[u8]>` - Optional IV for encrypted bytes.
+    ///
+    /// returns: std::io::Result<Vec<u8>>
     fn aes_encrypt_bytes(
         &self,
-        plaintext: &[u8],
+        plaintext: Self::InType,
         key: &[u8],
         iv: Option<&[u8]>,
     ) -> Self::ReturnType {
@@ -83,9 +192,21 @@ impl AESCrypter for DefaultAesCrypter {
         out.truncate(count + rest);
         Ok(out)
     }
+    /// Decrypts the data passed to the function. The default implementation of this for `DefaultAESCrypter` accepts a `&[u8]`
+    /// and passes back a Result<Vec<u8>> with the new decrypted data, and leaves the input untouched. You could implement
+    /// an `AESCrypter` that takes in a `&mut [u8]`, and passes back a bool on whether or the function succeeded in decrypting
+    /// the data. It is setup this way so that the user has more control over what their implementation of the trait is.  
+    ///
+    /// # Arguments
+    ///
+    /// * `encrypted`: `&[u8]` - The data to be decrypted.  
+    /// * `key`: `&[u8]` - AES Key for encrypted bytes.
+    /// * `iv`: `Option<&[u8]>` - Optional IV for encrypted bytes.
+    ///
+    /// returns: std::io::Result<Vec<u8>>
     fn aes_decrypt_bytes(
         &self,
-        encrypted: &[u8],
+        encrypted: Self::InType,
         key: &[u8],
         iv: Option<&[u8]>,
     ) -> Self::ReturnType {
@@ -97,6 +218,27 @@ impl AESCrypter for DefaultAesCrypter {
         out.truncate(count + rest);
         Ok(out)
     }
+}
+
+#[cfg(feature = "openssl")]
+const TEMP_BUFFER_SIZE: usize = 0x100;
+
+#[cfg(feature = "openssl")]
+impl AESStrCompare for DefaultAesCrypter {
+    /// Compares a string with the encrypted data. The implementation of this on the `DefaultAESCrypter` assumes the
+    /// encrypted and plaintext string is UTF-8. checks if the result would be the same length, first. Then it uses a
+    /// local buffer, chunks the string into slices the same size as the block size, and encrypts the slices into the local
+    /// buffer and compares the part of the encrypted chunk to the newly encrypted chunk of data, until it gets through
+    /// the whole string.
+    ///
+    /// # Arguments
+    ///
+    /// * `encrypted`: `&[u8]` - Encrypted bytes.
+    /// * `key`: `&[u8]` - AES Key for encrypted bytes.
+    /// * `iv`: `Option<&[u8]>` - Optional IV for encrypted bytes.
+    /// * `plaintext`: `&[u8]` - The plaintext UTF-8 string we are comparing against.
+    ///
+    /// returns: bool
     fn aes_compare_slice(
         &self,
         encrypted: &[u8],
@@ -133,6 +275,20 @@ impl AESCrypter for DefaultAesCrypter {
 
         true
     }
+    /// Compares a string with the encrypted data. The implementation of this on the `DefaultAESCrypter` assumes the
+    /// encrypted and plaintext string is UTF-8. checks if the result would be the same length, first. Then it uses a
+    /// local buffer, chunks the string into slices the same size as the block size, moves the ASCII value of the wide
+    /// string character into a secondary buffer, and encrypts the secondary buffer into the local buffer and compares
+    /// the part of the encrypted chunk to the newly encrypted chunk of data, until it gets through the whole wide string.
+    ///
+    /// # Arguments
+    ///
+    /// * `encrypted`: `&[u8]` - Encrypted bytes.
+    /// * `key`: `&[u8]` - AES Key for encrypted bytes.
+    /// * `iv`: `Option<&[u8]>` - Optional IV for encrypted bytes.
+    /// * `plaintext`: `&[u16]` - The plaintext UTF-8 string we are comparing against.
+    ///
+    /// returns: bool
     fn aes_compare_w_str(
         &self,
         encrypted: &[u8],

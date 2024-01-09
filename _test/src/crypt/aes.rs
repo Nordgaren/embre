@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod tests {
-    use embre_crypt::aes::{AESCrypter, DefaultAesCrypter};
+    use embre_crypt::aes::{AESCrypter, AESStrCompare, DefaultAesCrypter};
 
     #[test]
     fn aes_decrypt() {

@@ -1,5 +1,5 @@
-use std::marker::PhantomData;
 use crate::xor::compare::xor_u8_cmp;
+use std::marker::PhantomData;
 
 #[derive(Debug)]
 pub struct XORResource<'a, T> {

@@ -1,12 +1,12 @@
+use crate::xor::compare::xor_w_str_cmp;
 use crate::xor::xor_data::XORData;
 use crate::xor::xor_resource::XORResource;
-use crate::{StringResource, common_string_fmt};
+use crate::{common_string_fmt, StringResource};
 use core::ffi::CStr;
 use std::ffi::{CString, NulError};
 use std::fmt::Display;
 use std::string::FromUtf8Error;
 use widestring::{U16CStr, U16CString};
-use crate::xor::compare::xor_w_str_cmp;
 
 pub type XORString<'a> = XORResource<'a, StringResource>;
 impl<'a> XORString<'a> {

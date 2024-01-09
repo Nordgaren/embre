@@ -32,7 +32,6 @@ pub(crate) fn make_const_name(string: &str) -> String {
     const_name.replace("__", "_")
 }
 
-
 #[macro_export]
 macro_rules! build_println {
     ($($tokens: tt)*) => {

@@ -1,9 +1,9 @@
-use embre_crypt::aes::AESCrypter;
+use embre_crypt::aes::{AESCrypter, AESStrCompare};
 use embre_crypt::aes::DefaultAesCrypter;
 use std::marker::PhantomData;
 
 #[derive(Debug)]
-pub struct AESResource<'a, T, C: AESCrypter = DefaultAesCrypter> {
+pub struct AESResource<'a, T, C: AESCrypter<'a> = DefaultAesCrypter> {
     pub(super) resource: &'a [u8],
     pub(super) key: &'a [u8],
     pub(super) iv: Option<&'a [u8]>,
@@ -28,7 +28,7 @@ impl<'a, T> AESResource<'a, T> {
         self.iv
     }
 }
-impl<'a, T, C: AESCrypter> AESResource<'a, T, C> {
+impl<'a, T, C: AESCrypter<'a>> AESResource<'a, T, C> {
     pub fn new_from(
         cipher_text: &'a [u8],
         key: &'a [u8],

@@ -3,8 +3,8 @@
 use crate::make_const_name;
 use crate::resource::xor_resource::XORResource;
 use crate::resource::{GetResourceName, Resource};
-use embre_utils::{generate_random_bytes};
 use embre_crypt::aes::{AESCrypter, DefaultAesCrypter};
+use embre_utils::generate_random_bytes;
 
 pub struct AESResource {
     pub resource_name: String,

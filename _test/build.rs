@@ -1,6 +1,5 @@
 use embre_build::resource::aes_resource::AESResource;
 use embre_build::resource_builder::ResourceBuilder;
-use embre_build::util;
 
 fn main() {
     ResourceBuilder::default()

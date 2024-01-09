@@ -1,5 +1,5 @@
-mod xor;
 mod aes;
+mod xor;
 
 #[cfg(test)]
 mod tests {

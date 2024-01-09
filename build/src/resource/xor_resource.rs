@@ -1,9 +1,9 @@
 #![allow(unused)]
 
-use std::str::FromStr;
-use crate::resource::{GetResourceName, Resource};
-use embre_utils::{generate_random_bytes};
 use crate::make_const_name;
+use crate::resource::{GetResourceName, Resource};
+use embre_utils::generate_random_bytes;
+use std::str::FromStr;
 
 pub struct XORResource {
     pub(crate) resource_name: String,
@@ -18,7 +18,10 @@ impl XORResource {
         }
         XORResource {
             resource_name: make_const_name(resource_name),
-            encrypted_resource: Resource::new(embre_crypt::xor::xor_bytes(plaintext_bytes, &key_bytes[..])),
+            encrypted_resource: Resource::new(embre_crypt::xor::xor_bytes(
+                plaintext_bytes,
+                &key_bytes[..],
+            )),
             key: Resource::new(key_bytes),
         }
     }
@@ -44,7 +47,6 @@ impl XORResource {
         )
     }
 }
-
 
 impl GetResourceName for XORResource {
     fn get_resource_name(&self) -> &String {

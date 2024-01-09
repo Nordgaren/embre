@@ -76,7 +76,7 @@ impl Default for ResourceBuilder {
 impl ResourceBuilder {
     /// Returns a new Resource builder with the out_dir and config provided. `ResourceBuilder::default()` is almost always
     /// better, but this function is provided in-case the user decides to use a different out directory.
-    /// 
+    ///
     /// # Argmuents
     ///
     /// * `out_dir`: `String``
@@ -223,8 +223,7 @@ impl ResourceBuilder {
     ///         .build();
     /// ```
     pub fn add_aes_resource(mut self, resource: impl Into<AESResource>) -> Self {
-        self.aes_resources
-            .push(resource.into());
+        self.aes_resources.push(resource.into());
         self
     }
     pub fn build_resource_binary(mut self) -> Self {

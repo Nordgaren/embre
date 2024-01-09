@@ -1,8 +1,7 @@
-
 #[cfg(test)]
 mod tests {
-    use embre::embedded_resource::EmbeddedXOR;
     use crate::consts::*;
+    use embre::embedded_resource::EmbeddedXOR;
 
     #[test]
     fn get_xor_string() {

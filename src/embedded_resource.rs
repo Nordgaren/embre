@@ -82,7 +82,9 @@ pub trait EmbeddedAES: EmbeddedResource {
             .unwrap_or_else(|| panic!("{}", include_str_aes!("Could not find static resource")));
         let data = &resource[offsets.data..];
         let key = &resource[offsets.key..];
-        let iv = offsets.iv.map(|iv_offset| &resource[iv_offset..iv_offset + 16]);
+        let iv = offsets
+            .iv
+            .map(|iv_offset| &resource[iv_offset..iv_offset + 16]);
         AESData::new(&data[..offsets.len], &key[..32], iv)
     }
 }
