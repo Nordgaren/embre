@@ -1,11 +1,12 @@
 use crate::xor::xor_data::XORData;
 use crate::xor::xor_resource::XORResource;
-use crate::{util, StringResource};
+use crate::{StringResource, common_string_fmt};
 use core::ffi::CStr;
 use std::ffi::{CString, NulError};
 use std::fmt::Display;
 use std::string::FromUtf8Error;
 use widestring::{U16CStr, U16CString};
+use crate::xor::compare::xor_w_str_cmp;
 
 pub type XORString<'a> = XORResource<'a, StringResource>;
 impl<'a> XORString<'a> {
@@ -29,7 +30,7 @@ impl From<XORData<'static>> for XORString<'static> {
 }
 impl<'a> Display for XORString<'a> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        util::common_string_fmt(f, self.to_plaintext_string())
+        common_string_fmt(f, self.to_plaintext_string())
     }
 }
 // Eq for utf-8 or ascii strings
@@ -76,12 +77,12 @@ impl PartialEq<XORString<'_>> for CString {
 // EQ for wide strings
 impl PartialEq<[u16]> for XORString<'_> {
     fn eq(&self, other: &[u16]) -> bool {
-        util::xor_w_str_cmp(self.resource, self.key, other)
+        xor_w_str_cmp(self.resource, self.key, other)
     }
 }
 impl PartialEq<XORString<'_>> for [u16] {
     fn eq(&self, other: &XORString<'_>) -> bool {
-        util::xor_w_str_cmp(other.resource, other.key, self)
+        xor_w_str_cmp(other.resource, other.key, self)
     }
 }
 impl PartialEq<&[u16]> for XORString<'_> {

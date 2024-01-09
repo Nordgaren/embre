@@ -69,7 +69,7 @@ pub fn include_str_aes_impl(input: TokenStream) -> TokenStream {
 
     let key = if args.key.is_empty() {
         args.key
-            .extend(embre_build::util::generate_random_bytes(cipher.key_len()));
+            .extend(embre_utils::generate_random_bytes(cipher.key_len()));
         &args.key[..]
     } else {
         &args.key[..]
@@ -78,7 +78,7 @@ pub fn include_str_aes_impl(input: TokenStream) -> TokenStream {
     let iv = if let Some(len) = cipher.iv_len() {
         if args.iv.is_empty() {
             args.iv
-                .extend(embre_build::util::generate_random_bytes(len));
+                .extend(embre_utils::generate_random_bytes(len));
             Some(&args.iv[..])
         } else {
             Some(&args.iv[..])
@@ -174,7 +174,7 @@ pub fn include_bytes_aes_impl(input: TokenStream) -> TokenStream {
 
     let key = if args.key.is_empty() {
         args.key
-            .extend(embre_build::util::generate_random_bytes(cipher.key_len()));
+            .extend(embre_utils::generate_random_bytes(cipher.key_len()));
         &args.key[..]
     } else {
         &args.key[..]
@@ -183,7 +183,7 @@ pub fn include_bytes_aes_impl(input: TokenStream) -> TokenStream {
     let iv = if let Some(len) = cipher.iv_len() {
         if args.iv.is_empty() {
             args.iv
-                .extend(embre_build::util::generate_random_bytes(len));
+                .extend(embre_utils::generate_random_bytes(len));
             Some(&args.iv[..])
         } else {
             Some(&args.iv[..])

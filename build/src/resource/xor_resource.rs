@@ -2,7 +2,8 @@
 
 use std::str::FromStr;
 use crate::resource::{GetResourceName, Resource};
-use crate::util::{generate_random_bytes, make_const_name, xor_bytes};
+use embre_utils::{generate_random_bytes};
+use crate::make_const_name;
 
 pub struct XORResource {
     pub(crate) resource_name: String,
@@ -17,7 +18,7 @@ impl XORResource {
         }
         XORResource {
             resource_name: make_const_name(resource_name),
-            encrypted_resource: Resource::new(xor_bytes(plaintext_bytes, &key_bytes[..])),
+            encrypted_resource: Resource::new(embre_crypt::xor::xor_bytes(plaintext_bytes, &key_bytes[..])),
             key: Resource::new(key_bytes),
         }
     }

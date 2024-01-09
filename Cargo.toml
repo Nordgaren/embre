@@ -18,6 +18,7 @@ default-pe-resource = []
 [workspace]
 members = [
     "_test",
+    "_utils",
     "build",
     "core",
     "crypt",

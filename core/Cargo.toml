@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 embre-build = { path = "../build" }
+embre-utils = { path = "../_utils" }
 embre-crypt = { path = "../crypt", optional = true }
 syn = { version = "2.0.44", features = ["full", "fold"] }
 quote = "1.0"

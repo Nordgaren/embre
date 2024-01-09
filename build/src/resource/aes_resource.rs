@@ -1,10 +1,10 @@
 #![allow(unused)]
 
-use embre_crypt::aes::DefaultAesCrypter;
-use crate::build_println;
+use crate::make_const_name;
 use crate::resource::xor_resource::XORResource;
 use crate::resource::{GetResourceName, Resource};
-use crate::util::{aes_encrypt_bytes, generate_random_bytes, make_const_name, xor_bytes};
+use embre_utils::{generate_random_bytes};
+use embre_crypt::aes::{AESCrypter, DefaultAesCrypter};
 
 pub struct AESResource {
     pub resource_name: String,
@@ -23,20 +23,29 @@ impl AESResource {
         let key = match key {
             Some(v) => Resource::new(v),
             // @TODO: Figure out a way to get the key size from the crypter.
-            None => Resource::new(generate_random_bytes(DefaultAesCrypter::default().get_cipher().key_len())),
+            None => Resource::new(generate_random_bytes(
+                DefaultAesCrypter::default().get_cipher().key_len(),
+            )),
         };
         let iv = match iv {
             Some(v) => Resource::new(v),
             // @TODO: Figure out a way to get the iv size from the crypter.
-            None => Resource::new(generate_random_bytes(DefaultAesCrypter::default().get_cipher().iv_len().unwrap_or_default())),
+            None => Resource::new(generate_random_bytes(
+                DefaultAesCrypter::default()
+                    .get_cipher()
+                    .iv_len()
+                    .unwrap_or_default(),
+            )),
         };
+        let encrypted_resource = Resource::new(
+            DefaultAesCrypter::default()
+                .aes_encrypt_bytes(string_name, &key.bytes[..], Some(&iv.bytes[..]))
+                .expect("Could not encrypt bytes"),
+        );
+
         AESResource {
             resource_name: make_const_name(resource_name),
-            encrypted_resource: Resource::new(aes_encrypt_bytes(
-                string_name,
-                &key.bytes[..],
-                &iv.bytes[..],
-            )),
+            encrypted_resource,
             key,
             iv,
         }

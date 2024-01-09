@@ -1,5 +1,5 @@
-use crate::util;
 use std::marker::PhantomData;
+use crate::xor::compare::xor_u8_cmp;
 
 #[derive(Debug)]
 pub struct XORResource<'a, T> {
@@ -39,12 +39,12 @@ impl<T> PartialEq<Self> for XORResource<'_, T> {
 impl<T> Eq for XORResource<'_, T> {}
 impl<T> PartialEq<[u8]> for XORResource<'_, T> {
     fn eq(&self, other: &[u8]) -> bool {
-        util::xor_u8_cmp(self.resource, self.key, other)
+        xor_u8_cmp(self.resource, self.key, other)
     }
 }
 impl<T> PartialEq<XORResource<'_, T>> for [u8] {
     fn eq(&self, other: &XORResource<'_, T>) -> bool {
-        util::xor_u8_cmp(other.resource, other.key, self)
+        xor_u8_cmp(other.resource, other.key, self)
     }
 }
 impl<T> PartialEq<&[u8]> for XORResource<'_, T> {

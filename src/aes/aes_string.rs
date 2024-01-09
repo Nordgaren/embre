@@ -1,7 +1,7 @@
 use crate as embre;
 use crate::aes::aes_data::AESData;
 use crate::aes::aes_resource::AESResource;
-use crate::{util, StringResource};
+use crate::{common_string_fmt, StringResource};
 use embre_crypt::aes::AESCrypter;
 use embre_macro::include_str_aes;
 use std::ffi::{CStr, CString, NulError};
@@ -43,7 +43,7 @@ impl From<AESData<'static>> for AESString<'static> {
 }
 impl<'a> Display for AESString<'a> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        util::common_string_fmt(f, self.to_plaintext_string())
+        common_string_fmt(f, self.to_plaintext_string())
     }
 }
 // Eq for utf-8 or ascii strings

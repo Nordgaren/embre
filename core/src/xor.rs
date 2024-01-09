@@ -1,5 +1,4 @@
 use crate::literal_bytes::LitBytes;
-use embre_build::util::xor_bytes;
 use quote::quote;
 use std::fs;
 use syn::__private::TokenStream;
@@ -31,7 +30,7 @@ impl Parse for StringArgs {
                 Ok(StringArgs { string, key })
             }
             Err(_) => Ok(StringArgs {
-                key: embre_build::util::generate_random_bytes(string.len()),
+                key: embre_utils::generate_random_bytes(string.len()),
                 string,
             }),
         }
@@ -40,7 +39,7 @@ impl Parse for StringArgs {
 pub fn include_str_xor_impl(input: TokenStream) -> TokenStream {
     let args = parse_macro_input!(input as StringArgs);
 
-    let str = xor_bytes(args.string.as_bytes(), args.key.as_slice());
+    let str = embre_crypt::xor::xor_bytes(args.string.as_bytes(), args.key.as_slice());
     let key = args.key;
     let len = str.len();
     let q = quote!(
@@ -84,7 +83,7 @@ impl Parse for DataArgs {
                 Ok(DataArgs { data, key })
             }
             Err(_) => Ok(DataArgs {
-                key: embre_build::util::generate_random_bytes(data.len()),
+                key: embre_utils::generate_random_bytes(data.len()),
                 data,
             }),
         }
@@ -92,7 +91,7 @@ impl Parse for DataArgs {
 }
 pub fn include_bytes_xor_impl(input: TokenStream) -> TokenStream {
     let args = parse_macro_input!(input as DataArgs);
-    let data = xor_bytes(&args.data[..], &args.key[..]);
+    let data = embre_crypt::xor::xor_bytes(&args.data[..], &args.key[..]);
     let key = args.key;
     let len = data.len();
     let q = quote!(

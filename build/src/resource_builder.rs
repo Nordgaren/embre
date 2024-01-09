@@ -3,7 +3,7 @@ use crate::resource::aes_resource::AESResource;
 use crate::resource::plaintext_resource::PlaintextResource;
 use crate::resource::xor_resource::XORResource;
 use crate::resource::GetResourceName;
-use crate::util::generate_random_bytes;
+use embre_utils::generate_random_bytes;
 use rand;
 use rand::seq::SliceRandom;
 use rand::Rng;
@@ -164,7 +164,7 @@ impl ResourceBuilder {
     /// ```rust
     /// # use embre_build::resource::xor_resource::XORResource;
     /// # use embre_build::resource_builder::ResourceBuilder;
-    /// # use embre_build::util;
+    /// # use embre_utils::generate_random_bytes;
     ///
     /// # let some_var = 64;
     /// ResourceBuilder::default()
@@ -172,7 +172,7 @@ impl ResourceBuilder {
     ///         .add_xor_resource(("string 2", "MyString2"))
     ///         .add_xor_resource(("bytes", &[10, 11, 12, 13, 14, 15]))
     ///         .add_xor_resource(format!("Some formatted string {}", some_var))
-    ///         .add_xor_resource(XORResource::new("resource name", "resource string".as_bytes(), util::generate_random_bytes("resource string".len())))
+    ///         .add_xor_resource(XORResource::new("resource name", "resource string".as_bytes(), generate_random_bytes("resource string".len())))
     ///         .build();
     /// ```
     pub fn add_xor_resource(mut self, resource: impl Into<XORResource>) -> Self {
@@ -210,7 +210,7 @@ impl ResourceBuilder {
     /// ```rust
     /// # use embre_build::resource::aes_resource::AESResource;
     /// # use embre_build::resource_builder::ResourceBuilder;
-    /// # use embre_build::util;
+    /// # use embre_utils::generate_random_bytes;
     ///
     /// # let some_var = 64;
     /// # let key_len = 32;
@@ -219,7 +219,7 @@ impl ResourceBuilder {
     ///         .add_aes_resource(("string 2", "MyString2"))
     ///         .add_aes_resource(("bytes", &[10, 11, 12, 13, 14, 15]))
     ///         .add_aes_resource(format!("Some formatted string {}", some_var))
-    ///         .add_aes_resource(AESResource::new("resource name", "resource string".as_bytes(), Some(util::generate_random_bytes(key_len)), None))
+    ///         .add_aes_resource(AESResource::new("resource name", "resource string".as_bytes(), Some(generate_random_bytes(key_len)), None))
     ///         .build();
     /// ```
     pub fn add_aes_resource(mut self, resource: impl Into<AESResource>) -> Self {
