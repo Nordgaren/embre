@@ -1,8 +1,6 @@
 #![allow(unused)]
 
 use std::ops::RangeInclusive;
-use std::str::Utf8Error;
-use std::string::FromUtf8Error;
 
 const CASE_BIT: u8 = 0x20;
 const RANGE_START: u8 = b'A';
