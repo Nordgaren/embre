@@ -4,4 +4,9 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-embre = { path = "..", features = [ "openssl-vendored", "aes"] }
+embre = { path = "..", features = [ "openssl-vendored", "aes", "default-pe-resource"] }
+embre-build = { path = "../build" }
+embre-crypt = { path = "../crypt" }
+
+[build-dependencies]
+embre-build = { path = "../build" }

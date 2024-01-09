@@ -2,9 +2,9 @@
 use crate::resource::{GetResourceName, Resource};
 use crate::util::make_const_name;
 
-pub(crate) struct PlaintextResource {
+pub struct PlaintextResource {
     pub resource_name: String,
-    pub resource: Resource,
+    pub(crate) resource: Resource,
 }
 
 impl PlaintextResource {

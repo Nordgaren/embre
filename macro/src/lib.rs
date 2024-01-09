@@ -8,12 +8,12 @@ use proc_macro::TokenStream;
 /// Embeds the string  and key as a static byte slice, and gives the users an XORString with the syntax
 /// `XORString::new(&BYTES, &KEY)`.
 ///
-/// The user can define their own XORString with XORString::new(data: &[u8], key: &[u8]) to deal with the string, or they can use the
+/// The user can define their own XORString with XORString::new(data: `&[u8]`, key: `&[u8]`) to deal with the string, or they can use the
 /// `embre::xor::xor_string::XORString` provided in the crate.
 ///
 /// # Arguments
 ///
-/// * `input`: Can provide a string and an optional key in the array syntax style. They xor key must match the strings length,
+/// * Can provide a string and an optional key in the array syntax style. They xor key must match the strings length,
 /// but I may change that later to wrap the key value while XORing the target data.
 ///
 /// returns: XORString
@@ -33,12 +33,12 @@ pub fn include_str_xor(input: TokenStream) -> TokenStream {
 /// Embeds the file and key as a static byte slice, and gives the users an XORString with the syntax
 /// `XORData::new(&BYTES, &KEY)`.
 ///
-/// The user can define their own XORData with XORData::new(data: &[u8], key: &[u8]) to deal with the string, or they can use the
+/// The user can define their own XORData with XORData::new(data: `&[u8]`, key: `&[u8]`) to deal with the string, or they can use the
 /// `embre::xor::xor_data::XORData` provided in the crate.
 ///
 /// # Arguments
 ///
-/// * `input`: Can provide the path to a file and an optional key in the array syntax style. They xor key must match the strings length,
+/// * Can provide the path to a file and an optional key in the array syntax style. They xor key must match the strings length,
 /// but I may change that later to wrap the key value while XORing the target data.
 ///
 /// returns: XORString

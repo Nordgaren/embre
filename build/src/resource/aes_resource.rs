@@ -5,9 +5,9 @@ use crate::util::{aes_encrypt_bytes, generate_random_bytes, make_const_name, xor
 
 pub struct AESResource {
     pub resource_name: String,
-    pub encrypted_resource: Resource,
-    pub key: Resource,
-    pub iv: Resource,
+    pub(crate) encrypted_resource: Resource,
+    pub(crate) key: Resource,
+    pub(crate) iv: Resource,
 }
 
 impl AESResource {

@@ -11,7 +11,7 @@ use widestring::{U16CStr, U16CString};
 
 pub type AESString<'a> = AESResource<'a, StringResource>;
 impl<'a> AESString<'a> {
-    // This returns the original plaintext version of the string in a new String
+    /// This returns the original plaintext version of the string in a new String
     pub fn to_plaintext_string(&self) -> Result<String, FromUtf8Error> {
         String::from_utf8(self.to_plaintext_data().unwrap_or_else(|e| {
             panic!(
@@ -20,7 +20,7 @@ impl<'a> AESString<'a> {
             )
         }))
     }
-    // This returns the original plaintext version of the string in a new null terminated CString
+    /// This returns the original plaintext version of the string in a new null terminated CString
     pub fn to_plaintext_c_string(&self) -> Result<CString, NulError> {
         CString::new(self.to_plaintext_data().unwrap_or_else(|e| {
             panic!(

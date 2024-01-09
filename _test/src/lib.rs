@@ -1,4 +1,9 @@
 #![doc = include_str!("../README.md")]
+
+mod crypt;
+mod build;
+mod consts;
+
 #[cfg(test)]
 mod tests {
     use embre::aes::aes_data::AESData;
@@ -66,6 +71,7 @@ mod tests {
     #[test]
     fn aes_comparison_operators() {
         let aes_string = include_str_aes!("test string");
+
         assert!(
             aes_string == "test string",
             "Could not compare AES_STRING and &str 'test string'"

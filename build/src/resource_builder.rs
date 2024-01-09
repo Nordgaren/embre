@@ -20,8 +20,8 @@ use winresource::WindowsResource;
 ///
 /// # Fields
 ///
-/// * `out_dir`: String - The directory where all generated files are written to.
-/// * `config`: BuildConfig - Config type that allows the user to specify the category id, resource id, name, and pad range of the
+/// * `out_dir`: `String` - The directory where all generated files are written to.
+/// * `config`: `BuildConfig` - Config type that allows the user to specify the category id, resource id, name, and pad range of the
 /// resource builder.
 ///
 /// # Examples
@@ -40,7 +40,7 @@ pub struct ResourceBuilder {
     resource_bytes: Vec<u8>,
     plaintext_resources: Vec<PlaintextResource>,
     aes_resources: Vec<AESResource>,
-    pub(super) xor_resources: Vec<XORResource>,
+    xor_resources: Vec<XORResource>,
 }
 
 impl Default for ResourceBuilder {
@@ -76,6 +76,11 @@ impl Default for ResourceBuilder {
 impl ResourceBuilder {
     /// Returns a new Resource builder with the out_dir and config provided. `ResourceBuilder::default()` is almost always
     /// better, but this function is provided in-case the user decides to use a different out directory.
+    /// 
+    /// # Argmuents
+    ///
+    /// * `out_dir`: `String``
+    /// * `config`: `BuildConfig`
     pub fn new(out_dir: String, config: BuildConfig) -> Self {
         ResourceBuilder {
             out_dir,
@@ -103,12 +108,38 @@ impl ResourceBuilder {
         self.config = config;
         self
     }
+    /// Insert bytes into the embedded resource. These bytes are immediately added to `self.resource_bytes`, so they are
+    /// added before any other resources are added by this builder. This is a way to include other binary blobs my by other
+    /// ResourceBuilders, etc, that depend on their position being before any additional resources are added.
+    ///
+    /// The bytes are added in the order the call is placed, and can only be called before the build function is called.
+    ///
+    /// # Arguments
+    ///
+    /// * `other`: `&[u8]` - Slice of bytes to be inserted into the resource.
+    ///
+    /// returns: ResourceBuilder
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// # use embre_build::resource_builder::ResourceBuilder;
+    /// let other_resource = &[]; /* pretend this is a binary blob */
+    /// ResourceBuilder::default()
+    ///         .with_bytes(other_resource)
+    ///         .add_xor_resource("My String")
+    ///         .build();
+    /// ```
+    pub fn with_bytes(mut self, other: &[u8]) -> Self {
+        self.resource_bytes.extend(other);
+        self
+    }
     /// Add multiple Strings at a time to be xor encrypted. All strings will be auto-named for lookup constants.
     pub fn add_xor_strings(self, strings: &[String]) -> Self {
         let strs: Vec<&str> = strings.iter().map(|s| s.as_str()).collect();
         self.add_xor_strs(strs.as_slice())
     }
-    /// Add multiple &strs at a time to be xor encrypted. All strings will be auto-named for lookup constants.
+    /// Add multiple `&strs` at a time to be xor encrypted. All strings will be auto-named for lookup constants.
     pub fn add_xor_strs(mut self, strs: &[&str]) -> Self {
         self.xor_resources.extend(
             strs.iter()
@@ -124,7 +155,7 @@ impl ResourceBuilder {
     /// # Arguments
     ///
     /// * `resource`: impl Into\<XORResource\> - Anything that implements Into<XORResource>. This can be an XORResource, itself, or a String, &str,
-    /// a tuple of (&str, &str) or tuple of (&str, &[u8]).
+    /// a tuple of (`&str`, `&str`) or tuple of (`&str`, &`[u8]`).
     ///
     /// returns: ResourceBuilder
     ///
@@ -170,7 +201,7 @@ impl ResourceBuilder {
     /// # Arguments
     ///
     /// * `resource`: impl Into\<AESResource\> - Anything that implements Into<AESResource>. This can be an AESResource, itself, or a String, &str,
-    /// a tuple of (&str, &str) or tuple of (&str, &[u8]).
+    /// a tuple of (`&str`, `&str`) or tuple of (`&str`, `&[u8]`).
     ///
     /// returns: ResourceBuilder
     ///
@@ -191,7 +222,7 @@ impl ResourceBuilder {
     ///         .add_aes_resource(AESResource::new("resource name", "resource string".as_bytes(), Some(util::generate_random_bytes(key_len)), None))
     ///         .build();
     /// ```
-    pub fn add_aes_str(mut self, resource: impl Into<AESResource>) -> Self {
+    pub fn add_aes_resource(mut self, resource: impl Into<AESResource>) -> Self {
         self.aes_resources
             .push(resource.into());
         self
@@ -254,7 +285,7 @@ impl ResourceBuilder {
 
         self.aes_resources.iter().for_each(|string| {
             consts.push(format!(
-                "pub const {}: embre::embedded_resource::XOROffsets = embre::embedded_resource::XOROffsets::new({:#X}, {:#X}, Some({:#X}), {:#X});",
+                "pub const {}: embre::embedded_resource::AESOffsets = embre::embedded_resource::AESOffsets::new({:#X}, {:#X}, Some({:#X}), {:#X});",
                 string.resource_name, string.encrypted_resource.offset, string.key.offset, string.iv.offset, string.encrypted_resource.bytes.len()
             ));
         });

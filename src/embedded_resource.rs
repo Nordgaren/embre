@@ -51,12 +51,15 @@ impl AESOffsets {
 }
 
 pub trait EmbeddedResource {
+    /// Returns a reference to the start of a resource.
     fn get_resource(&self) -> Option<&'static [u8]>;
 }
 pub trait EmbeddedXOR: EmbeddedResource {
+    /// Returns the encrypted data from the provided offsets, as an XORString.
     fn get_str(&self, offsets: XOROffsets) -> XORString<'static> {
         self.get_data(offsets).into()
     }
+    /// Returns the encrypted data from the provided offsets, as XORData.
     fn get_data(&self, offsets: XOROffsets) -> XORData<'static> {
         let resource = self
             .get_resource()
@@ -68,16 +71,18 @@ pub trait EmbeddedXOR: EmbeddedResource {
 }
 #[cfg(feature = "aes")]
 pub trait EmbeddedAES: EmbeddedResource {
+    /// Returns the encrypted data from the provided offsets, as an AESString.
     fn get_str(&self, offsets: AESOffsets) -> AESString<'static> {
         self.get_data(offsets).into()
     }
+    /// Returns the encrypted data from the provided offsets, as AESData.
     fn get_data(&self, offsets: AESOffsets) -> AESData<'static> {
         let resource = self
             .get_resource()
             .unwrap_or_else(|| panic!("{}", include_str_aes!("Could not find static resource")));
         let data = &resource[offsets.data..];
         let key = &resource[offsets.key..];
-        let iv = offsets.iv.map(|iv_offset| &resource[iv_offset..16]);
+        let iv = offsets.iv.map(|iv_offset| &resource[iv_offset..iv_offset + 16]);
         AESData::new(&data[..offsets.len], &key[..32], iv)
     }
 }
@@ -90,6 +95,7 @@ pub mod default_impl {
     use crate::embedded_resource::PEResource;
 
     impl EmbeddedResource for PEResource {
+        /// Returns the resource embedded the programs PE header/resource section, via the windows API.
         fn get_resource(&self) -> Option<&'static [u8]> {
             unsafe {
                 let hModule = GetModuleHandleA(std::ptr::null::<u8>());

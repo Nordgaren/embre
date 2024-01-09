@@ -25,6 +25,7 @@ pub(crate) fn rsa_encrypt_bytes(file: &[u8], key: &[u8]) -> std::io::Result<Vec<
     encrypter.encrypt(file, &mut buffer[..])?;
     Ok(buffer)
 }
+// Keep this here until I get to the rsa tests.
 #[cfg(test)]
 mod tests {
     use crate::rsa::{rsa_decrypt_bytes, rsa_encrypt_bytes};
@@ -53,7 +54,7 @@ mod tests {
             0x66, 0xF6, 0x46, 0x1D, 0xDA, 0xB9, 0x54, 0x64, 0x1F, 0x5F, 0x9E, 0xE7,
         ];
         let key = fs::read("test_key")
-            .expect("Could not read 'test_key'. Make sure it is in the crypt directory.");
+            .expect("Could not read 'test_key'. Make sure it is in the aes directory.");
         let bytes = rsa_decrypt_bytes(&data, &key[..]).expect("Could not decrypt test string");
         assert_eq!(&bytes[..], b"rsa_test_string");
     }
@@ -62,7 +63,7 @@ mod tests {
     fn rsa_encrypt() {
         let data = b"rsa_test_string";
         let key = fs::read("test_key.pub")
-            .expect("Could not read 'test_key.pub'. Make sure it is in the crypt directory.");
+            .expect("Could not read 'test_key.pub'. Make sure it is in the aes directory.");
         let bytes = rsa_encrypt_bytes(&data[..], &key[..]).expect("Could not encrypt test string");
         let key = fs::read("test_key").expect("Could not read test private key");
         let unenc = rsa_decrypt_bytes(&bytes[..], &key[..]).expect("Could not encrypt test string");
