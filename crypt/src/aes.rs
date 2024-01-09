@@ -2,22 +2,22 @@ use openssl::symm::{Cipher, Crypter, Mode};
 
 pub trait AESCrypter {
     type ReturnType;
-    fn aes_encrypt_bytes(&self, bytes: &[u8], key: &[u8], iv: Option<&[u8]>) -> Self::ReturnType;
-    fn aes_decrypt_bytes(&self, bytes: &[u8], key: &[u8], iv: Option<&[u8]>) -> Self::ReturnType;
-    fn aes_compare_slice(&self, bytes: &[u8], key: &[u8], iv: Option<&[u8]>, other: &[u8]) -> bool;
+    fn aes_encrypt_bytes(&self, encrypted: &[u8], key: &[u8], iv: Option<&[u8]>) -> Self::ReturnType;
+    fn aes_decrypt_bytes(&self, plaintext: &[u8], key: &[u8], iv: Option<&[u8]>) -> Self::ReturnType;
+    fn aes_compare_slice(&self, encrypted: &[u8], key: &[u8], iv: Option<&[u8]>, plaintext: &[u8]) -> bool;
     /// Compares a wide string with the encrypted data. The implementation of this on the DefaultAESCrypter assumes the
     /// encrypted string is UTF-8, so it writes the utf-8 version of each character of the 'other' string to the buffer
     /// for the encryption and comparison.
     ///
     /// # Arguments
     ///
-    /// * `bytes`: `&[u8]` - Encrypted bytes.
+    /// * `encrypted`: `&[u8]` - Encrypted bytes.
     /// * `key`: `&[u8]` - AES Key for encrypted bytes.
     /// * `iv`: `Option<&[u8]>` - Optional IV for encrypted bytes.
-    /// * `other`: `&[u16]` - The plaintext wide string we are comparing against.
+    /// * `plaintext`: `&[u16]` - The plaintext wide string we are comparing against.
     ///
     /// returns: bool
-    fn aes_compare_w_str(&self, bytes: &[u8], key: &[u8], iv: Option<&[u8]>, other: &[u16])
+    fn aes_compare_w_str(&self, encrypted: &[u8], key: &[u8], iv: Option<&[u8]>, plaintext: &[u16])
         -> bool;
 }
 
@@ -71,28 +71,28 @@ impl AESCrypter for DefaultAesCrypter {
     type ReturnType = std::io::Result<Vec<u8>>;
     fn aes_encrypt_bytes(
         &self,
-        encrypted: &[u8],
+        plaintext: &[u8],
         key: &[u8],
         iv: Option<&[u8]>,
     ) -> Self::ReturnType {
         let mut crypter = Crypter::new(self.cipher, Mode::Encrypt, key, iv)?;
         crypter.pad(true);
-        let mut out = vec![0; encrypted.len() + self.cipher.block_size()];
-        let count = crypter.update(encrypted, &mut out)?;
+        let mut out = vec![0; plaintext.len() + self.cipher.block_size()];
+        let count = crypter.update(plaintext, &mut out)?;
         let rest = crypter.finalize(&mut out[count..])?;
         out.truncate(count + rest);
         Ok(out)
     }
     fn aes_decrypt_bytes(
         &self,
-        plaintext: &[u8],
+        encrypted: &[u8],
         key: &[u8],
         iv: Option<&[u8]>,
     ) -> Self::ReturnType {
         let mut crypter = Crypter::new(self.cipher, Mode::Decrypt, key, iv)?;
         crypter.pad(true);
-        let mut out = vec![0; plaintext.len() + self.cipher.block_size()];
-        let count = crypter.update(plaintext, &mut out)?;
+        let mut out = vec![0; encrypted.len() + self.cipher.block_size() * 2];
+        let count = crypter.update(encrypted, &mut out)?;
         let rest = crypter.finalize(&mut out[count..])?;
         out.truncate(count + rest);
         Ok(out)

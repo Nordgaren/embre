@@ -1,4 +1,7 @@
 #![allow(unused)]
+
+use embre_crypt::aes::DefaultAesCrypter;
+use crate::build_println;
 use crate::resource::xor_resource::XORResource;
 use crate::resource::{GetResourceName, Resource};
 use crate::util::{aes_encrypt_bytes, generate_random_bytes, make_const_name, xor_bytes};
@@ -20,14 +23,13 @@ impl AESResource {
         let key = match key {
             Some(v) => Resource::new(v),
             // @TODO: Figure out a way to get the key size from the crypter.
-            None => Resource::new(generate_random_bytes(32)),
+            None => Resource::new(generate_random_bytes(DefaultAesCrypter::default().get_cipher().key_len())),
         };
         let iv = match iv {
             Some(v) => Resource::new(v),
             // @TODO: Figure out a way to get the iv size from the crypter.
-            None => Resource::new(generate_random_bytes(16)),
+            None => Resource::new(generate_random_bytes(DefaultAesCrypter::default().get_cipher().iv_len().unwrap_or_default())),
         };
-
         AESResource {
             resource_name: make_const_name(resource_name),
             encrypted_resource: Resource::new(aes_encrypt_bytes(
