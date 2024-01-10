@@ -137,7 +137,7 @@ section of a PE.
 `crypt` - A crypt crate that holds all the encryption implementations for openssl.   
 `macro` - Macros for encrypting and embedding resources directly in your codebase, instead of using the build method.  
 `utils` - Soon. Will move some functionality that is currently in the `build` crate, into this one.  
-`ember` - The main crate. This is where the abstractions for handling and comparing the encrypted resources, are.  
+`embre` - The main crate. This is where the abstractions for handling and comparing the encrypted resources, are.  
 
 ## Goals  
 > Right now I want to support as many AES encryption methods as I can, and make macros for each, maybe.   
