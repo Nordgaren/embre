@@ -16,19 +16,19 @@ You can include encrypted bytes or strings with the macros that this crate offer
     // You can include files as encrypted bytes with a full or relative path.  
     // You can compare them with other plaintext buffers as if they were plaintext byte slices. 
     const XOR_BYTES: XORBytes = include_xor_bytes!("P:/ath/to/file.bin");
-fn bytes() {
-    let aes_bytes = include_aes_bytes!("relative/path/file.bin");
-    assert!(XOR_BYTES == include_bytes!("P:/ath/to/file.bin"));
-    assert!(aes_bytes == include_bytes!("relative/path/file.bin"));
-}
+    fn bytes() {
+        let aes_bytes = include_aes_bytes!("relative/path/file.bin");
+        assert!(XOR_BYTES == include_bytes!("P:/ath/to/file.bin"));
+        assert!(aes_bytes == include_bytes!("relative/path/file.bin"));
+    }
     // You can also include xor encrypted strings using the raw string, or a path to the file.
     // These string types can be directly compared
     const XOR_STRING: XORString = include_xor_str!("My String");
-fn strings() {
-    let aes_string = include_aes_str!("./string.file");
-    assert!(XOR_STRING == "test string");
-    assert!(aes_string == include_str!("./string.file"));
-}
+    fn strings() {
+        let aes_string = include_aes_str!("./string.file");
+        assert!(XOR_STRING == "test string");
+        assert!(aes_string == include_str!("./string.file"));
+    }
 ```
 XOR data/strings can be created as consts/statics. I hope to be able to do the same with AES, soon.
 
@@ -136,7 +136,7 @@ section of a PE.
 `core`  - The implementation for the macros in the macro crate.  
 `crypt` - A crypt crate that holds all the encryption implementations for openssl.   
 `macro` - Macros for encrypting and embedding resources directly in your codebase, instead of using the build method.  
-`utils` - Soon. Will move some functionality that is currently in the `build` crate, into this one.  
+`utils` - Utils have now all been moved to a utils crate, for any shared functionality between sub-crates.  
 `embre` - The main crate. This is where the abstractions for handling and comparing the encrypted resources, are.  
 
 ## Goals  

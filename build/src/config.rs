@@ -11,7 +11,7 @@ use std::ops::RangeInclusive;
 ///
 /// # Examples
 ///
-/// ```
+/// ```rust
 /// # use embre_build::config::BuildConfig;
 /// // These example values also happen to be the default values for BuildConfig::default();
 /// let config = BuildConfig::new(10, 100, "resource.bin".to_string(), 0..=0x100);

@@ -20,9 +20,11 @@ use proc_macro::TokenStream;
 ///
 /// # Examples
 ///
-/// ```
+/// ```rust
 /// # struct XORString; // Fake type to keep linter from complaining.
 /// # use embre_macro::include_str_xor;
+/// // You will need to either use embre::xor::xor_string::XORString, or define your own XORString with custom functionality.  
+/// // example: type XORString<'a> = embre::xor::xor_resource::XORResource<'a, str>;
 /// const XOR_STRING: XORString = include_str_xor!("test string");
 /// const XOR_STRING_WITH_KEY: XORString = include_str_xor!("test string", [10, 125, 40, 55, 100, 110, 40, 120, 250, 19, 103]);
 /// ```
@@ -45,9 +47,11 @@ pub fn include_str_xor(input: TokenStream) -> TokenStream {
 ///
 /// # Examples
 ///
-/// ```
+/// ```rust
 /// # struct XORData; // Fake type to keep linter from complaining.
 /// # use embre_macro::include_bytes_xor;
+/// // You will need to either `use embre::xor::xor_string::XORData;`, or define your own XORData with custom functionality.  
+/// // example: type XORData<'a> = embre::xor::xor_resource::XORResource<'a, str>; 
 /// const XOR_STRING: XORData = include_bytes_xor!("P:/ath/to/file.bin");
 /// const XOR_STRING_WITH_KEY: XORData = include_bytes_xor!("P:/ath/to/file.bin", [10, 125, 40, 55, 100, 110, 40]);
 /// ```

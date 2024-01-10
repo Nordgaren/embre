@@ -67,6 +67,10 @@
 <a href="#67" id="67">67</a>
 <a href="#68" id="68">68</a>
 <a href="#69" id="69">69</a>
+<a href="#70" id="70">70</a>
+<a href="#71" id="71">71</a>
+<a href="#72" id="72">72</a>
+<a href="#73" id="73">73</a>
 </pre></div><pre class="rust"><code><span class="attr">#![doc = <span class="macro">include_str!</span>(<span class="string">&quot;../README.md&quot;</span>)]
 
 #[cfg(feature = <span class="string">&quot;aes&quot;</span>)]
@@ -89,9 +93,11 @@
 ///
 /// # Examples
 ///
-/// ```
+/// ```rust
 /// # struct XORString; // Fake type to keep linter from complaining.
 /// # use embre_macro::include_str_xor;
+/// // You will need to either use embre::xor::xor_string::XORString, or define your own XORString with custom functionality.  
+/// // example: type XORString&lt;&#39;a&gt; = embre::xor::xor_resource::XORResource&lt;&#39;a, str&gt;;
 /// const XOR_STRING: XORString = include_str_xor!(&quot;test string&quot;);
 /// const XOR_STRING_WITH_KEY: XORString = include_str_xor!(&quot;test string&quot;, [10, 125, 40, 55, 100, 110, 40, 120, 250, 19, 103]);
 /// ```
@@ -114,9 +120,11 @@
 ///
 /// # Examples
 ///
-/// ```
+/// ```rust
 /// # struct XORData; // Fake type to keep linter from complaining.
 /// # use embre_macro::include_bytes_xor;
+/// // You will need to either `use embre::xor::xor_string::XORData;`, or define your own XORData with custom functionality.  
+/// // example: type XORData&lt;&#39;a&gt; = embre::xor::xor_resource::XORResource&lt;&#39;a, str&gt;; 
 /// const XOR_STRING: XORData = include_bytes_xor!(&quot;P:/ath/to/file.bin&quot;);
 /// const XOR_STRING_WITH_KEY: XORData = include_bytes_xor!(&quot;P:/ath/to/file.bin&quot;, [10, 125, 40, 55, 100, 110, 40]);
 /// ```
