@@ -13,22 +13,22 @@ fixed itself. IDK. :(
 You can include encrypted bytes or strings with the macros that this crate offers.
 
 ```rust
-    // You can include files as encrypted bytes with a full or relative path.  
-    // You can compare them with other plaintext buffers as if they were plaintext byte slices. 
-    const XOR_BYTES: XORBytes = include_xor_bytes!("P:/ath/to/file.bin");
-    fn bytes() {
-        let aes_bytes = include_aes_bytes!("relative/path/file.bin");
-        assert!(XOR_BYTES == include_bytes!("P:/ath/to/file.bin"));
-        assert!(aes_bytes == include_bytes!("relative/path/file.bin"));
-    }
-    // You can also include xor encrypted strings using the raw string, or a path to the file.
-    // These string types can be directly compared
-    const XOR_STRING: XORString = include_xor_str!("My String");
-    fn strings() {
-        let aes_string = include_aes_str!("./string.file");
-        assert!(XOR_STRING == "test string");
-        assert!(aes_string == include_str!("./string.file"));
-    }
+// You can include files as encrypted bytes with a full or relative path.  
+// You can compare them with other plaintext buffers as if they were plaintext byte slices. 
+const XOR_BYTES: XORBytes = include_xor_bytes!("P:/ath/to/file.bin");
+fn bytes() {
+    let aes_bytes = include_aes_bytes!("relative/path/file.bin");
+    assert!(XOR_BYTES == include_bytes!("P:/ath/to/file.bin"));
+    assert!(aes_bytes == include_bytes!("relative/path/file.bin"));
+}
+// You can also include xor encrypted strings using the raw string, or a path to the file.
+// These string types can be directly compared
+const XOR_STRING: XORString = include_xor_str!("My String");
+fn strings() {
+    let aes_string = include_aes_str!("./string.file");
+    assert!(XOR_STRING == "test string");
+    assert!(aes_string == include_str!("./string.file"));
+}
 ```
 XOR data/strings can be created as consts/statics. I hope to be able to do the same with AES, soon.
 
