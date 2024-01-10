@@ -9,3 +9,8 @@ embre-crypt = { path = "../crypt" }
 winresource = "0.1.17"
 rand = "0.8.5"
 
+[features]
+default = []
+aes = ["embre-crypt/aes", "embre-crypt/openssl-vendored"]
+openssl = ["embre-crypt/openssl"]
+openssl-vendored = ["embre-crypt/openssl-vendored"]

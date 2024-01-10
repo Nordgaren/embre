@@ -13,6 +13,6 @@ proc-macro2 = "1.0.69"
 
 [features]
 default = []
-aes = ["embre-crypt/aes", "embre-crypt/openssl"]
+aes = ["embre-crypt/aes", "embre-crypt/openssl-vendored"]
 openssl = ["embre-crypt/openssl"]
 openssl-vendored = ["embre-crypt/openssl-vendored"]

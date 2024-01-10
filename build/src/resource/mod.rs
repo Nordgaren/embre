@@ -1,3 +1,4 @@
+#[cfg(feature = "aes")]
 pub mod aes_resource;
 pub mod plaintext_resource;
 pub mod xor_resource;

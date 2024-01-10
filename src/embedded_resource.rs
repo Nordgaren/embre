@@ -8,15 +8,11 @@ use crate::aes::aes_string::AESString;
 use crate::xor::xor_data::XORData;
 use crate::xor::xor_string::XORString;
 use crate::{DataResource, StringResource};
-#[cfg(feature = "aes")]
-use embre_macro::include_str_aes;
-use embre_macro::include_str_xor;
 
 pub struct PEResource {
     pub category_id: u32,
     pub resource_id: u32,
 }
-
 impl PEResource {
     pub const fn new(category_id: u32, resource_id: u32) -> Self {
         PEResource {
@@ -63,7 +59,7 @@ pub trait EmbeddedXOR: EmbeddedResource {
     fn get_data(&self, offsets: XOROffsets) -> XORData<'static> {
         let resource = self
             .get_resource()
-            .unwrap_or_else(|| panic!("{}", include_str_xor!("Could not find static resource")));
+            .unwrap_or_else(|| panic!("{}", embre_macro::include_str_xor!("Could not find static resource")));
         let data = &resource[offsets.data..];
         let key = &resource[offsets.key..];
         XORData::new(&data[..offsets.len], &key[..offsets.len])
@@ -79,7 +75,7 @@ pub trait EmbeddedAES: EmbeddedResource {
     fn get_data(&self, offsets: AESOffsets) -> AESData<'static> {
         let resource = self
             .get_resource()
-            .unwrap_or_else(|| panic!("{}", include_str_aes!("Could not find static resource")));
+            .unwrap_or_else(|| panic!("{}", embre_macro::include_str_aes!("Could not find static resource")));
         let data = &resource[offsets.data..];
         let key = &resource[offsets.key..];
         let iv = offsets
@@ -91,6 +87,7 @@ pub trait EmbeddedAES: EmbeddedResource {
 #[allow(non_snake_case)]
 #[cfg(feature = "default-pe-resource")]
 pub mod default_impl {
+    #[cfg(feature = "aes")]
     use crate::embedded_resource::EmbeddedAES;
     use crate::embedded_resource::EmbeddedResource;
     use crate::embedded_resource::EmbeddedXOR;

@@ -1,4 +1,5 @@
 use crate::config::BuildConfig;
+#[cfg(feature = "aes")]
 use crate::resource::aes_resource::AESResource;
 use crate::resource::plaintext_resource::PlaintextResource;
 use crate::resource::xor_resource::XORResource;
@@ -9,6 +10,7 @@ use rand::seq::SliceRandom;
 use rand::Rng;
 use std::{env, fs};
 use winresource::WindowsResource;
+
 /// A Resource builder for building a binary blob for embedding into a PE (or soon, an ELF). This builder also provides
 /// offsets to the data in the binary blob, and can also do the embedding process into a PE resource, for you.  Resources
 /// are inserted randomly into the binary blob on build, with random padding between each resource, determined by the config.
@@ -39,6 +41,7 @@ pub struct ResourceBuilder {
     config: BuildConfig,
     resource_bytes: Vec<u8>,
     plaintext_resources: Vec<PlaintextResource>,
+    #[cfg(feature = "aes")]
     aes_resources: Vec<AESResource>,
     xor_resources: Vec<XORResource>,
 }
@@ -87,6 +90,7 @@ impl ResourceBuilder {
             config,
             resource_bytes: vec![],
             plaintext_resources: vec![],
+            #[cfg(feature = "aes")]
             aes_resources: vec![],
             xor_resources: vec![],
         }
@@ -180,11 +184,13 @@ impl ResourceBuilder {
         self
     }
     /// Add multiple Strings at a time to be aes encrypted. All strings will be auto-named for lookup constants.
+    #[cfg(feature = "aes")]
     pub fn add_aes_strings(self, strings: &[String]) -> Self {
         let strs: Vec<&str> = strings.iter().map(|s| s.as_str()).collect();
         self.add_xor_strs(strs.as_slice())
     }
     /// Add multiple &strs at a time to be aes encrypted. All strings will be auto-named for lookup constants.
+    #[cfg(feature = "aes")]
     pub fn add_aes_strs(mut self, strs: &[&str]) -> Self {
         self.aes_resources.extend(
             strs.iter()
@@ -222,6 +228,7 @@ impl ResourceBuilder {
     ///         .add_aes_resource(AESResource::new("resource name", "resource string".as_bytes(), Some(generate_random_bytes(key_len)), None))
     ///         .build();
     /// ```
+    #[cfg(feature = "aes")]
     pub fn add_aes_resource(mut self, resource: impl Into<AESResource>) -> Self {
         self.aes_resources.push(resource.into());
         self
@@ -230,6 +237,7 @@ impl ResourceBuilder {
         // Put these functions into a vector we can then pop functions out of, to randomize position of resources.
         let mut resources = vec![];
 
+        #[cfg(feature = "aes")]
         for resource in self.aes_resources.iter_mut() {
             resources.push(&mut resource.encrypted_resource);
             resources.push(&mut resource.key);
@@ -281,7 +289,7 @@ impl ResourceBuilder {
                 string.resource_name, string.encrypted_resource.offset, string.key.offset, string.encrypted_resource.bytes.len()
             ));
         });
-
+        #[cfg(feature = "aes")]
         self.aes_resources.iter().for_each(|string| {
             consts.push(format!(
                 "pub const {}: embre::embedded_resource::AESOffsets = embre::embedded_resource::AESOffsets::new({:#X}, {:#X}, Some({:#X}), {:#X});",
@@ -331,16 +339,18 @@ impl ResourceBuilder {
         }
     }
     pub(super) fn get_resource_names(&self) -> Vec<&String> {
-        self.xor_resources
+        let names = self
+            .xor_resources
             .iter()
             .map(|r| r.get_resource_name())
-            .chain(self.aes_resources.iter().map(|r| r.get_resource_name()))
             .chain(
                 self.plaintext_resources
                     .iter()
                     .map(|r| r.get_resource_name()),
-            )
-            .collect()
+            );
+        #[cfg(feature = "aes")]
+        let names = names.chain(self.aes_resources.iter().map(|r| r.get_resource_name()));
+        names.collect()
     }
     fn check_duplicate_entries(&self) {
         let mut names: Vec<_> = self.get_resource_names();
@@ -358,36 +368,47 @@ impl From<String> for XORResource {
         XORResource::from(&string[..])
     }
 }
+
 impl From<&str> for XORResource {
     fn from(string: &str) -> Self {
         XORResource::from_str(string)
     }
 }
+
 impl From<(&str, &str)> for XORResource {
     fn from((name, string): (&str, &str)) -> Self {
         XORResource::named_str(name, string)
     }
 }
+
 impl From<(&str, &[u8])> for XORResource {
     fn from((name, data): (&str, &[u8])) -> Self {
         XORResource::named(name, data)
     }
 }
+
+#[cfg(feature = "aes")]
 impl From<String> for AESResource {
     fn from(string: String) -> Self {
         AESResource::from(&string[..])
     }
 }
+
+#[cfg(feature = "aes")]
 impl From<&str> for AESResource {
     fn from(string: &str) -> Self {
         AESResource::from_str(string, None, None)
     }
 }
+
+#[cfg(feature = "aes")]
 impl From<(&str, &str)> for AESResource {
     fn from((name, string): (&str, &str)) -> Self {
         AESResource::named_str(name, string)
     }
 }
+
+#[cfg(feature = "aes")]
 impl From<(&str, &[u8])> for AESResource {
     fn from((name, data): (&str, &[u8])) -> Self {
         AESResource::named(name, data)

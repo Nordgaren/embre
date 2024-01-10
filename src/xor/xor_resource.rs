@@ -1,5 +1,6 @@
 use crate::xor::compare::xor_u8_cmp;
 use std::marker::PhantomData;
+use embre_crypt::xor::xor_bytes;
 
 #[derive(Debug)]
 pub struct XORResource<'a, T> {
@@ -15,14 +16,9 @@ impl<'a, T> XORResource<'a, T> {
             phantom_data: PhantomData,
         }
     }
+    /// Returns a Vec<u8> with the decrypted data.   
     pub fn to_plaintext_data(&self) -> Vec<u8> {
-        let mut chrs = self.resource.to_vec();
-
-        for (i, chr) in chrs.iter_mut().enumerate() {
-            *chr ^= self.key[i];
-        }
-
-        chrs
+        xor_bytes(self.resource, self.key)
     }
     pub fn get_encrypted_slice(&self) -> &'a [u8] {
         self.resource
