@@ -24,3 +24,13 @@ members = [
     "crypt",
     "macro",
 ]
+
+default-members = [
+    "_utils",
+    "build",
+    "core",
+    "crypt",
+    "macro",
+]
+
+

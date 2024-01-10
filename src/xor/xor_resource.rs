@@ -16,7 +16,7 @@ impl<'a, T> XORResource<'a, T> {
             phantom_data: PhantomData,
         }
     }
-    /// Returns a Vec<u8> with the decrypted data.   
+    /// Returns a `Vec<u8>` with the decrypted data.
     pub fn to_plaintext_data(&self) -> Vec<u8> {
         xor_bytes(self.resource, self.key)
     }

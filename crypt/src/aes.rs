@@ -29,7 +29,7 @@ pub trait AESCrypter<'a> {
         iv: Option<&[u8]>,
     ) -> Self::ReturnType;
     /// Decrypts the data passed to the function. The implementation of this for `DefaultAESCrypter` accepts a `&[u8]`
-    /// and passes back a Result<Vec<u8>> with the new decrypted data, and leaves the input untouched.   
+    /// and passes back a `Result<Vec<u8>>` with the new decrypted data, and leaves the input untouched.
     ///
     /// # Arguments
     ///
@@ -177,7 +177,7 @@ impl<'a> AESCrypter<'a> for DefaultAesCrypter {
     /// * `key`: `&[u8]` - AES Key for encrypted bytes.
     /// * `iv`: `Option<&[u8]>` - Optional IV for encrypted bytes.
     ///
-    /// returns: std::io::Result<Vec<u8>>
+    /// returns: `std::io::Result<Vec<u8>>`
     fn aes_encrypt_bytes(
         &self,
         plaintext: Self::InType,
@@ -193,7 +193,7 @@ impl<'a> AESCrypter<'a> for DefaultAesCrypter {
         Ok(out)
     }
     /// Decrypts the data passed to the function. The default implementation of this for `DefaultAESCrypter` accepts a `&[u8]`
-    /// and passes back a Result<Vec<u8>> with the new decrypted data, and leaves the input untouched. You could implement
+    /// and passes back a `Result<Vec<u8>>` with the new decrypted data, and leaves the input untouched. You could implement
     /// an `AESCrypter` that takes in a `&mut [u8]`, and passes back a bool on whether or the function succeeded in decrypting
     /// the data. It is setup this way so that the user has more control over what their implementation of the trait is.  
     ///
@@ -203,7 +203,7 @@ impl<'a> AESCrypter<'a> for DefaultAesCrypter {
     /// * `key`: `&[u8]` - AES Key for encrypted bytes.
     /// * `iv`: `Option<&[u8]>` - Optional IV for encrypted bytes.
     ///
-    /// returns: std::io::Result<Vec<u8>>
+    /// returns: `std::io::Result<Vec<u8>>`
     fn aes_decrypt_bytes(
         &self,
         encrypted: Self::InType,

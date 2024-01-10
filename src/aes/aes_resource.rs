@@ -14,7 +14,7 @@ impl<'a, T> AESResource<'a, T> {
     pub fn new(cipher_text: &'a [u8], key: &'a [u8], iv: Option<&'a [u8]>) -> AESResource<'a, T> {
         Self::new_from(cipher_text, key, iv, DefaultAesCrypter::default())
     }
-    /// Returns a Vec<u8> with the decrypted data.   
+    /// Returns a `Vec<u8>` with the decrypted data.
     pub fn to_plaintext_data(&self) -> std::io::Result<Vec<u8>> {
         self.crypter
             .aes_decrypt_bytes(self.resource, self.key, self.iv)

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["FindResourceA","GetModuleHandleA","LoadResource","LockResource","SizeofResource"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["xor_data","xor_resource","xor_string"]};

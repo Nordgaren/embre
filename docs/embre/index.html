@@ -1,0 +1,149 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="EmbRe - Embedded Resources API for Rust"><title>embre - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../static.files/rustdoc-9ee3a5e31a2afa3e.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="embre" data-themes="" data-resource-suffix="" data-rustdoc-version="1.75.0 (82e1608df 2023-12-21)" data-channel="1.75.0" data-search-js="search-8fbf244ebcf71464.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../crates.js"></script><script defer src="../static.files/main-9dd44ab47b99a0fb.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../embre/index.html">embre</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><ul class="block">
+            <li><a id="all-types" href="all.html">All Items</a></li></ul><section><ul class="block"><li><a href="#modules">Modules</a></li><li><a href="#macros">Macros</a></li><li><a href="#structs">Structs</a></li></ul></section></div></nav><main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Crate <a class="mod" href="#">embre</a><button id="copy-path" title="Copy item path to clipboard"><img src="../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="src" href="../src/embre/lib.rs.html#1-28">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><h2 id="embre---embedded-resources-api-for-rust"><a href="#embre---embedded-resources-api-for-rust">EmbRe - Embedded Resources API for Rust</a></h2>
+<p>If GIF can be pronounced “JIF”, then my jift to the world is that this crate is pronounced “Ember”.
+A crate for encrypting, embedding and comparing encrypted resources to non encrypted resources, in Rust.</p>
+<h3 id="known-issue"><a href="#known-issue">Known Issue</a></h3>
+<blockquote>
+<p>For some reason, openssl has to be vendored. If not, the embre crate will not build, because it will be unable to find 
+the “embre-macro” crate, for some reason. I am not sure why. I do want to fix it, asap, though! Update: May or may not have
+fixed itself. IDK. :(</p>
+</blockquote>
+<blockquote>
+<p>AES portion of crate still needs a lot of testing.</p>
+</blockquote>
+<h3 id="macro-embedding"><a href="#macro-embedding">Macro Embedding</a></h3>
+<p>You can include encrypted bytes or strings with the macros that this crate offers.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code>    <span class="comment">// You can include files as encrypted bytes with a full or relative path.  
+    // You can compare them with other plaintext buffers as if they were plaintext byte slices. 
+    </span><span class="kw">const </span>XOR_BYTES: XORBytes = <span class="macro">include_xor_bytes!</span>(<span class="string">&quot;P:/ath/to/file.bin&quot;</span>);
+<span class="kw">fn </span>bytes() {
+    <span class="kw">let </span>aes_bytes = <span class="macro">include_aes_bytes!</span>(<span class="string">&quot;relative/path/file.bin&quot;</span>);
+    <span class="macro">assert!</span>(XOR_BYTES == <span class="macro">include_bytes!</span>(<span class="string">&quot;P:/ath/to/file.bin&quot;</span>));
+    <span class="macro">assert!</span>(aes_bytes == <span class="macro">include_bytes!</span>(<span class="string">&quot;relative/path/file.bin&quot;</span>));
+}
+    <span class="comment">// You can also include xor encrypted strings using the raw string, or a path to the file.
+    // These string types can be directly compared
+    </span><span class="kw">const </span>XOR_STRING: XORString = <span class="macro">include_xor_str!</span>(<span class="string">&quot;My String&quot;</span>);
+<span class="kw">fn </span>strings() {
+    <span class="kw">let </span>aes_string = <span class="macro">include_aes_str!</span>(<span class="string">&quot;./string.file&quot;</span>);
+    <span class="macro">assert!</span>(XOR_STRING == <span class="string">&quot;test string&quot;</span>);
+    <span class="macro">assert!</span>(aes_string == <span class="macro">include_str!</span>(<span class="string">&quot;./string.file&quot;</span>));
+}</code></pre></div>
+<p>XOR data/strings can be created as consts/statics. I hope to be able to do the same with AES, soon.</p>
+<h3 id="build-script-embedding"><a href="#build-script-embedding">Build Script Embedding</a></h3>
+<p>You can embed strings in a PE resource. Currently this just automatically calls the <code>winresource</code> crate, but in the future 
+I would like to add the ability for the user to build and embed the resource, however they would like, by just passing back 
+a vector.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="comment">// build.rs
+
+</span><span class="kw">use </span>embre_build::resource_builder::ResourceBuilder;
+
+<span class="kw">fn </span>main() {
+    ResourceBuilder::default()
+        <span class="comment">// named strings allow you to determine the name of the constant for your strings
+        </span>.add_xor_resource((<span class="string">&quot;named xor&quot;</span>, <span class="string">&quot;My named XOR string&quot;</span>)) <span class="comment">// NAMED_XOR_POS NAMED_XOR_KEY NAMED_XOR_LEN
+        // no named variants will use the full string as the constant name
+        </span>.add_xor_resource(<span class="string">&quot;My xor string&quot;</span>) <span class="comment">// MY_XOR_STRING_POS MY_XOR_STRING_KEY MY_XOR_STRING_LEN
+        // same goes for aes encrypted strings
+        </span>.add_aes_resource(AESResource::named_str(<span class="string">&quot;named aes&quot;</span>, <span class="string">&quot;My named AES string&quot;</span>)) <span class="comment">// NAMED_AES_POS NAMED_AES_KEY NAMED_AES_IV NAMED_AES_LEN
+        // spaces are replaced with &#39;_&#39; for all constant names, and all symbols are removed.
+        </span>.add_aes_resource(<span class="string">&quot;My AES string!&quot;</span>) <span class="comment">// MY_AES_STRING_POS MY_AES_STRING_KEY MY_AES_STRING_IV MY_AES_STRING_LEN
+        </span>.build();
+}</code></pre></div>
+<p>You can then include the generated consts file using the <code>include!</code> macro, and use the default PEResource struct to get 
+the embedded resources, using the feature <code>DefaultPEResource</code>. This will load the PE resource via the Windows API. You 
+can also implement your own PEResource struct and get_resource implementation for PEs, by implementing the <code>EmbeddedResource</code> 
+trait. This trait is still in development, and signatures may change in future updates.</p>
+<p>Currently the traits to get the resource have the same name, in case your build has any type of symbols. get_str and get_data.
+If you pass in AESOffsets, you get AESData or AESString. If you pass in XOROffsets, you will get the XORData or XORString you
+requested. </p>
+<p>In the future I need to change these traits so that the user can get their custom AESResource or XORResource impls.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="comment">// Include the generated consts file that is in the out dir.  
+</span><span class="macro">include!</span>(<span class="macro">concat!</span>(<span class="macro">env!</span>(<span class="string">&quot;OUT_DIR&quot;</span>), <span class="string">&quot;/consts.rs&quot;</span>));
+
+<span class="kw">fn </span>main() {
+  <span class="kw">let </span>pe = RESOURCE_INFO;
+  <span class="comment">// Pass in XOROffsets to get XOR data and strings
+  </span><span class="kw">let </span>name_xor_string = pe.get_str(NAMED_XOR);
+  <span class="kw">let </span>xor_string = pe.get_data(MY_XOR);
+  <span class="comment">// Pass in AESOffets to get AES data and strings  
+  </span><span class="kw">let </span>name_aes_string = pe.get_str(NAMED_AES);
+  <span class="kw">let </span>aes_string = pe.get_data(MY_AES);
+}</code></pre></div>
+<p>If you don’t want to use <code>DefaultPEResource</code> implementation, you can implement your own and implement 
+<code>From&lt;embre::embedded_resource::PEResource&gt;</code> to easily convert the const generated from the crate format to your format.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>embre::embedded_resource::PEResource;
+
+<span class="kw">pub struct </span>MyPEResource {
+    category_id: u32,
+    resource_id: u32,
+}
+<span class="kw">impl </span>MyPEResource { 
+  <span class="comment">// Any methods you might want to have, for your own struct.  
+</span>}
+
+<span class="kw">impl </span>From&lt;PEResource&gt; <span class="kw">for </span>MyPEResource {
+    <span class="kw">fn </span>from(value: PEResource) -&gt; <span class="self">Self </span>{
+      MyPEResource {
+            category_id: value.category_id,
+            resource_id: value.resource_id,
+        }
+    }
+}
+
+<span class="kw">impl </span>EmbeddedResource <span class="kw">for </span>MyPEResource {
+    <span class="kw">fn </span>get_resource(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>[u8]&gt; {
+        <span class="kw">unsafe </span>{
+            <span class="kw">let </span>addr = GetModuleHandleInternal(<span class="prelude-val">None</span>);
+            <span class="kw">let </span>pe = PE::from_address(addr).ok()<span class="question-mark">?</span>;
+
+            pe.get_pe_resource(<span class="self">self</span>.category_id, <span class="self">self</span>.resource_id)
+        }
+    }
+}
+
+<span class="kw">impl </span>EmbeddedXOR <span class="kw">for </span>MyPEResource {}
+
+<span class="kw">impl </span>EmbeddedAES <span class="kw">for </span>MyPEResource {}
+
+<span class="kw">fn </span>main() {
+  <span class="kw">let </span>pe = PEResource::from(RESOURCE_INFO);
+  <span class="kw">let </span>name_xor_string = pe.get_str(NAMED_XOR);
+  <span class="kw">let </span>xor_string = pe.get_str(MY_XOR);
+  <span class="kw">let </span>name_aes_string = pe.get_str(NAMED_AES);
+  <span class="kw">let </span>aes_string = pe.get_str(MY_AES);
+}</code></pre></div>
+<p>This just uses the default implementation for <code>EmbeddedXOR</code> and <code>EmbeddedAES</code>, but you can also implement your own, as well.</p>
+<h3 id="sub-crates"><a href="#sub-crates">Sub crates</a></h3>
+<p>You should only have to import the main crate. The sub crates are for development/organizational purposes, only.</p>
+<p><code>_test</code> - Testing crate for the macro crate. Do not import.<br />
+<code>build</code> - This crate holds the build utilities for creating a binary blob to be embedded somewhere, like the PE Resource 
+section of a PE.<br />
+<code>core</code>  - The implementation for the macros in the macro crate.<br />
+<code>crypt</code> - A crypt crate that holds all the encryption implementations for openssl.<br />
+<code>macro</code> - Macros for encrypting and embedding resources directly in your codebase, instead of using the build method.<br />
+<code>utils</code> - Soon. Will move some functionality that is currently in the <code>build</code> crate, into this one.<br />
+<code>ember</code> - The main crate. This is where the abstractions for handling and comparing the encrypted resources, are.</p>
+<h3 id="goals"><a href="#goals">Goals</a></h3>
+<blockquote>
+<p>Right now I want to support as many AES encryption methods as I can, and make macros for each, maybe.<br />
+I would like to figure out a way to get the AES resource functions to be const compile time methods. 
+I also want the user to be able to define their own implementation for the encryption/decryption process. For example 
+the AESCrypter trait can be implemented for a user defined type, and then used in the <code>AESResource&lt;'a, T, C: AESCrypter&gt;</code> 
+type, and the program will use the implementation the user defined. This way the user could handle things differently, 
+or use a different encryption library, for whatever reason.</p>
+</blockquote>
+<h3 id="thank-you"><a href="#thank-you">Thank You</a></h3>
+<p><a href="https://github.com/largenumberhere">RoseHasANose</a> - Thank you for the LitBytes parser code for the import macros, and helping me figure out how to parse 
+arguments the way I want them!</p>
+<h3 id="todo"><a href="#todo">Todo</a></h3>
+<blockquote>
+<p>Build a TODO list…  </p>
+</blockquote>
+</div></details><h2 id="modules" class="small-section-header"><a href="#modules">Modules</a></h2><ul class="item-table"><li><div class="item-name"><a class="mod" href="aes/index.html" title="mod embre::aes">aes</a></div></li><li><div class="item-name"><a class="mod" href="embedded_resource/index.html" title="mod embre::embedded_resource">embedded_resource</a></div></li><li><div class="item-name"><a class="mod" href="xor/index.html" title="mod embre::xor">xor</a></div></li></ul><h2 id="macros" class="small-section-header"><a href="#macros">Macros</a></h2><ul class="item-table"><li><div class="item-name"><a class="macro" href="macro.include_bytes_aes.html" title="macro embre::include_bytes_aes">include_bytes_aes</a></div></li><li><div class="item-name"><a class="macro" href="macro.include_bytes_xor.html" title="macro embre::include_bytes_xor">include_bytes_xor</a></div><div class="desc docblock-short">Embeds the file and key as a static byte slice, and gives the users an XORString with the syntax
+<code>XORData::new(&amp;BYTES, &amp;KEY)</code>.</div></li><li><div class="item-name"><a class="macro" href="macro.include_str_aes.html" title="macro embre::include_str_aes">include_str_aes</a></div></li><li><div class="item-name"><a class="macro" href="macro.include_str_xor.html" title="macro embre::include_str_xor">include_str_xor</a></div><div class="desc docblock-short">Embeds the string  and key as a static byte slice, and gives the users an XORString with the syntax
+<code>XORString::new(&amp;BYTES, &amp;KEY)</code>.</div></li></ul><h2 id="structs" class="small-section-header"><a href="#structs">Structs</a></h2><ul class="item-table"><li><div class="item-name"><a class="struct" href="struct.DataResource.html" title="struct embre::DataResource">DataResource</a></div></li><li><div class="item-name"><a class="struct" href="struct.StringResource.html" title="struct embre::StringResource">StringResource</a></div></li></ul></section></div></main></body></html>

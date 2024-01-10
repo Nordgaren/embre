@@ -158,7 +158,7 @@ impl ResourceBuilder {
     ///
     /// # Arguments
     ///
-    /// * `resource`: impl Into\<XORResource\> - Anything that implements Into<XORResource>. This can be an XORResource, itself, or a String, &str,
+    /// * `resource`: impl Into\<XORResource\> - Anything that implements `Into<XORResource>`. This can be an XORResource, itself, or a String, &str,
     /// a tuple of (`&str`, `&str`) or tuple of (`&str`, &`[u8]`).
     ///
     /// returns: ResourceBuilder
@@ -206,7 +206,7 @@ impl ResourceBuilder {
     ///
     /// # Arguments
     ///
-    /// * `resource`: impl Into\<AESResource\> - Anything that implements Into<AESResource>. This can be an AESResource, itself, or a String, &str,
+    /// * `resource`: impl Into\<AESResource\> - Anything that implements `Into<AESResource>`. This can be an AESResource, itself, or a String, &str,
     /// a tuple of (`&str`, `&str`) or tuple of (`&str`, `&[u8]`).
     ///
     /// returns: ResourceBuilder
@@ -234,7 +234,7 @@ impl ResourceBuilder {
         self
     }
     pub fn build_resource_binary(mut self) -> Self {
-        // Put these functions into a vector we can then pop functions out of, to randomize position of resources.
+        // Put these `Resource`s into a vector we can then pop functions out of, to randomize position of resources.
         let mut resources = vec![];
 
         #[cfg(feature = "aes")]

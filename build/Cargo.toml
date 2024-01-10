@@ -11,6 +11,6 @@ rand = "0.8.5"
 
 [features]
 default = []
-aes = ["embre-crypt/aes", "embre-crypt/openssl-vendored"]
+aes = ["embre-crypt/aes"]
 openssl = ["embre-crypt/openssl"]
 openssl-vendored = ["embre-crypt/openssl-vendored"]

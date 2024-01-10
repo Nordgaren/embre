@@ -4,7 +4,8 @@ A crate for encrypting, embedding and comparing encrypted resources to non encry
 
 ## Known Issue
 > For some reason, openssl has to be vendored. If not, the embre crate will not build, because it will be unable to find 
-the "embre-macro" crate, for some reason. I am not sure why. I do want to fix it, asap, though!   
+the "embre-macro" crate, for some reason. I am not sure why. I do want to fix it, asap, though! Update: May or may not have
+fixed itself. IDK. :(
 
 > AES portion of crate still needs a lot of testing.  
 

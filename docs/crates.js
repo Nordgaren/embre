@@ -1,0 +1,1 @@
+window.ALL_CRATES = ["embre","embre_build","embre_core","embre_crypt","embre_macro","embre_test","embre_utils"];
