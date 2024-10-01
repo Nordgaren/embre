@@ -309,34 +309,28 @@ impl ResourceBuilder {
         )
         .expect("Could not write resources.h file.");
 
-        fs::write(
-            format!("{}/resources.rc", self.out_dir),
-            format!(
-                "#include \"resources.h\"\nPAYLOAD_ID RCDATA {}\n",
-                "resource.bin"
-            ),
-        )
-        .expect("Could not write resources.rc file.");
-
         self
     }
     pub fn build(self) {
+        self.build_windows_resource().compile().unwrap()
+    }
+    pub fn build_windows_resource(self) -> WindowsResource {
         self.check_duplicate_entries();
 
         // Build the resource file
-        let s = self
-            .build_resource_binary()
+        self.build_resource_binary()
             // Builds src/consts.rs for use in the actual application
             .build_consts_file()
             // Build the resource header files for embedding.
             .build_resource_headers();
 
-        if env::var("CARGO_CFG_TARGET_OS").unwrap() == "windows" {
-            WindowsResource::new()
-                .set_resource_file(&format!("{}/resources.rc", s.out_dir))
-                .compile()
-                .expect("Could not compile pe resource.");
-        }
+        let mut res = WindowsResource::new();
+        res.append_rc_content(&format!(
+            "#include \"resources.h\"\nPAYLOAD_ID RCDATA {}\n",
+            "resource.bin"
+        ));
+
+        res
     }
     pub(super) fn get_resource_names(&self) -> Vec<&String> {
         let names = self
