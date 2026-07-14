@@ -4,12 +4,14 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-openssl = { version = "0.10.59",  optional = true }
-openssl-sys = "0.9.98"
-openssl-probe="0.1.5"
+openssl = { version = "0.10.59", optional = true }
+openssl-sys = { version = "0.9.98", optional = true }
+openssl-probe = { version = "0.1.5", optional = true }
 
 
 [features]
 default = []
-aes = []
+aes = ["openssl"]
+rsa = ["openssl"]
+openssl = ["dep:openssl", "dep:openssl-sys", "dep:openssl-probe"]
 openssl-vendored = ["openssl", "openssl/vendored"]

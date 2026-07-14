@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-embre-crypt = { path = "crypt", optional = true }
+embre-crypt = { path = "crypt" }
 embre-macro = { path = "macro" }
 widestring = "1.0.2"
 
